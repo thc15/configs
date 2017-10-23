@@ -1,0 +1,16 @@
+#bind -f ~/.inputrc
+
+set completion-ignore-case on
+#set editing-mode vi NOK 
+
+"\ep": history-search-backward
+
+"\e[A": history-search-backward
+"\e[B": history-search-forward
+
+"\C-e": end-of-line
+"\C-a": beginning-of-line
+"\C-w": backward-kill-word
+"\C-k": kill-line
+
+
