@@ -74,7 +74,6 @@ set list
 set listchars=tab:>-,trail:.,extends:>
 set columns=200
 set cursorline
-set paste
 set autoread
 set autowrite
 set wildmenu
@@ -84,6 +83,11 @@ set wrap
 "set complete-=i
 set iskeyword-=:
 
+set paste
+set go+=a
+
+" Disable bracketed mode
+set t_BE=
 
 """"""""""""""""""""MAPPING""""""""""""""""""""""
 
@@ -118,6 +122,7 @@ autocmd! * *.gold
 map <F1> :tn <CR>
 
 map <F5> :source $HOME/.vimrc <CR>
+map <F6> :! $HOME/utils/update_ctags.sh & <CR>
 
 noremap <C-M> :set columns=235 <CR> :wincmd =<CR> :cclose <CR>
 nnoremap <C-o> :BufOnly <CR>
@@ -131,6 +136,10 @@ autocmd QuickFixCmdPost [^l]* nested cwindow
 autocmd QuickFixCmdPost    l* nested lwindow
 noremap <F9> :wa <CR> :make -j5 -s -w -C $DEV_ROOT/defacto/src/framework/
 "command! -nargs=* Mk silent make -w -C <args> | cwindow 3
+
+vmap cc :s/^/\/\/ /<CR>
+vmap cu :s/\v^(\/\/\|#)//<CR>
+
 
 """"""""""""""""""""COLORS""""""""""""""""""""""
 colorscheme desert
