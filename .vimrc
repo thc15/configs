@@ -4,44 +4,45 @@ set nocompatible              " be iMproved
 filetype off                  " required!
 let g:mapleader=","
 
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#rc()
-
+"set rtp+=~/.vim/bundle/vundle
+"call vundle#rc()
+" - Avoid using standard Vim directory names like 'plugin'
+call plug#begin('~/.vim/plugged')
 
 " let Vundle manage Vundle
 " required!
-Bundle 'gmarik/vundle'
+" Bundle 'gmarik/vundle'
 
 " original repos on github
-Bundle 'desert-warm-256'
+Plug 'desert-warm-256'
 
-Bundle 'https://github.com/vim-scripts/perl-support.vim.git'
-Bundle 'https://github.com/altercation/vim-colors-solarized.git'
-Bundle 'https://github.com/vim-scripts/ctags.vim.git'
-Bundle 'https://github.com/scrooloose/nerdtree.git'
-"Bundle 'https://github.com/scrooloose/nerdcommenter.git'
-Bundle 'https://github.com/majutsushi/tagbar.git'
-"Plugin 'SirVer/ultisnips'
-"Plugin 'honza/vim-snippets'
-Bundle 'https://github.com/ap/vim-buftabline.git'
-Bundle 'https://github.com/vim-scripts/cpp.vim.git'
-Bundle 'https://github.com/vim-scripts/python.vim.git'
-Bundle 'https://github.com/tpope/vim-fugitive.git'
-Bundle 'https://github.com/kien/ctrlp.vim.git'
-Bundle 'https://github.com/ervandew/supertab.git'
-Bundle 'https://github.com/Rip-Rip/clang_complete.git'
-"Bundle 'https://github.com/scrooloose/syntastic.git'
-"Bundle 'https://github.com/mbbill/echofunc.git'
-Bundle 'https://github.com/vim-scripts/BufOnly.vim.git'
-Bundle 'https://github.com/vim-scripts/bufferlist.vim.git'
-Bundle 'mileszs/ack.vim'
-Bundle 'https://github.com/vhda/verilog_systemverilog.vim.git'
-"Bundle 'https://github.com/vim-scripts/OmniCppComplete.git'
-"Bundle 'https://github.com/vim-scripts/Conque-GDB.git'
-"Bundle 'https://github.com/ajh17/VimCompletesMe.git'
+Plug 'https://github.com/vim-scripts/perl-support.vim.git'
+Plug 'https://github.com/altercation/vim-colors-solarized.git'
+Plug 'https://github.com/vim-scripts/ctags.vim.git'
+Plug 'https://github.com/scrooloose/nerdtree.git'
+"Plug 'https://github.com/scrooloose/nerdcommenter.git'
+Plug 'https://github.com/majutsushi/tagbar.git'
+Plug 'https://github.com/ap/vim-buftabline.git'
+Plug 'https://github.com/vim-scripts/cpp.vim.git'
+Plug 'https://github.com/vim-scripts/python.vim.git'
+Plug 'https://github.com/tpope/vim-fugitive.git'
+Plug 'https://github.com/kien/ctrlp.vim.git'
+"" Snippets
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
+Plug 'https://github.com/vim-scripts/clang-complete.git'
+Plug 'https://github.com/ervandew/supertab.git'
+"Plug 'https://github.com/scrooloose/syntastic.git'
+Plug 'https://github.com/vim-scripts/BufOnly.vim.git'
+Plug 'https://github.com/vim-scripts/bufferlist.vim.git'
+Plug 'mileszs/ack.vim'
+Plug 'https://github.com/vhda/verilog_systemverilog.vim.git'
+"Plug 'https://github.com/vim-scripts/OmniCppComplete.git'
+"Plug 'https://github.com/vim-scripts/Conque-GDB.git'
+"Plug 'https://github.com/ajh17/VimCompletesMe.git'
 
-"Bundle 'https://github.com/Shougo/neocomplcache.vim.git'
-"Bundle 'https://github.com/Valloric/YouCompleteMe.git'
+"Plug 'https://github.com/Shougo/neocomplcache.vim.git'
+"Plug 'https://github.com/Valloric/YouCompleteMe.git'
 
 """""""""""""""""""""""""""""""""""""""""""""
 syntax on
@@ -63,7 +64,6 @@ set scrolloff=5
 set hidden
 set switchbuf=usetab
 set autoindent
-set smartindent
 set cino+=(0    " indent function args
 set expandtab
 set bs=2
@@ -80,8 +80,7 @@ set wildmenu
 set wildmode=list:longest
 set ruler
 set wrap
-"set complete-=i
-set iskeyword-=:
+"set iskeyword-=:
 
 set paste
 set go+=a
@@ -124,7 +123,7 @@ map <F1> :tn <CR>
 map <F5> :source $HOME/.vimrc <CR>
 map <F6> :! $HOME/utils/update_ctags.sh & <CR>
 
-noremap <C-M> :set columns=235 <CR> :wincmd =<CR> :cclose <CR>
+noremap <C-M> :set columns=235 <CR> :wincmd =<CR> :cclose <CR> :TagbarToggle <CR>
 nnoremap <C-o> :BufOnly <CR>
 noremap <F4> :bp<CR>:bd # <CR>
 noremap <C-s-t> :vs<bar>:b#<CR>
@@ -158,62 +157,50 @@ hi CursorLine cterm=bold guifg=NONE guibg=#525252
 """""""""""""""""""" TAGS""""""""""""""""""""""
 set tags=$DEV_ROOT/tags;
 
-"""""""""""""""""""" ECHOFUNC""""""""""""""""""""""
-
-"let g:EchoFuncShowOnStatus = 1
-"let g:EchoFuncLangsUsed = ["perl","cpp"]
-
-"""""""""""""""""""" SUPERTAB""""""""""""""""""""""
-"let g:SuperTabContextDefaultCompletionType = "<c-n>"
-"" SuperTab completion fall-back 
-""let g:SuperTabDefaultCompletionType='<c-x><c-u><c-p>'
-"let g:SuperTabDefaultCompletionType='<c-n>'
-
-""""""""""""""""""""" CLANGCOMPL""""""""""""""""""""""
-"set conceallevel=2
-"set concealcursor=vin
-"let g:clang_snippets=1
-"let g:clang_conceal_snippets=1
-"" The single one that works with clang_complete
-"let g:clang_snippets_engine='clang_complete'
-"
-"" Complete options (disable preview scratch window, longest removed to aways
-"" show menu)
-"set completeopt=menu,menuone
-"
-"" Limit popup menu height
-"set pumheight=20
-"
-"" SuperTab completion fall-back 
-""let g:SuperTabDefaultCompletionType='<c-x><c-u><c-p>'
-""let g:clang_library_path=$HOME.'/soft/clang_llvm-3.8.0-linux-x86_64-centos6/lib'
-"let omnifunc='ClangComplete'
-"let completefunc='ClangComplete'
+" snippets
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<c-tab>"
+let g:UltiSnipsEditSplit="vertical"
 
 """""""""""""""""""" CLANG_COMPLETE""""""""""""""""""""""
-let g:clang_complete_loaded=1
-let g:clang_use_library = 1
-let g:clang_library_path='$HOME/soft/local/usr/lib64/llvm/libclang.so'
-let g:clang_snippets = 1
-let g:clang_snippets_engine = 'clang_complete'
-let g:clang_complete_patterns = 1
-let g:clang_complete_optional_args_in_snippets = 1
-let g:clang_trailing_placeholder = 1
+set omnifunc=
+set completefunc=
+let g:clang_complete_loaded = 1
+"let g:clang_debug = 1
+" Disable auto popup, use <Tab> to autocomplete
 let g:clang_complete_auto = 1
-let g:clang_close_preview = 1
+" Show clang errors in the quickfix window
 let g:clang_complete_copen = 1
+let g:clang_use_library = 1
+let g:clang_library_path='/local_home/thomas/soft/local/usr/lib64/llvm/'
+let g:clang_trailing_placeholder = 1
+let g:clang_close_preview = 1
 let g:clang_auto_select = 1
 set conceallevel=2
 set concealcursor=vin
-" Complete options (disable preview scratch window, longest removed to aways show menu)
-set completeopt=menu,menuone
+" Don't use snippets for function completion
+"let g:clang_conceal_snippets=1
+"let g:clang_snippets = 1
+"let g:clang_snippets_engine = 'clang_complete'
+" let g:clang_snippets_engine = 'ultisnips'
+let g:clang_complete_patterns = 1
+let g:clang_complete_optional_args_in_snippets = 1
+" Complete options (disable preview scratch window, longest removed to always show menu)
+set completeopt=menu,menuone,preview
+
 " Limit popup menu height
 set pumheight=20
 
-"'ultisnips'
 "let g:clang_jumpto_declaration_key = ',d'
 let g:clang_user_options = '-std=c++11'
-set complete-=i
+"set complete-=i " disable completion from include files
+
+"""""""""""""""""""" SUPERTAB""""""""""""""""""""""
+" SuperTab option for context aware completion
+" SuperTab completion fall-back 
+let g:SuperTabDefaultCompletionType='<c-x><c-u><c-p>'
+"let g:SuperTabDefaultCompletionType = "context"
 
 """""""""""""""""""" YCM""""""""""""""""""""""
 "let g:ycm_min_num_of_chars_for_completion = 2
@@ -305,40 +292,22 @@ set complete-=i
 "let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
 "let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 
-
-""""""""""""""""""""" OMNICPPCOMPLETE"""""""""""""""""""""""
-"" <TAB>: completion.
-"inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : ""
-"inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : ""
-"let OmniCpp_GlobalScopeSearch = 0
-"let OmniCpp_ShowAccess = 1
-"let OmniCpp_MayCompleteDot = 1 " autocomplete after .
-"let OmniCpp_MayCompleteArrow = 1 " autocomplete after ->
-"let OmniCpp_MayCompleteScope = 1 " autocomplete after ::
-"let OmniCpp_DefaultNamespaces = ["std", "_GLIBCXX_STD"]
-"let OmniCpp_SelectFirstItem = 1
-"let OmniCpp_NamespaceSearch = 0 " search namespaces in this and included files
-"let OmniCpp_ShowPrototypeInAbbr = 1 " show function prototype (i.e. parameters) in popup window
-"let OmniCpp_LocalSearchDecl = 1 " don't require special style of function opening braces
-"" automatically open and close the popup menu / preview window
-"au CursorMovedI,InsertLeave * if pumvisible() == 0|silent! pclose|endif
-"set completeopt=menuone,menu,preview
 "
 """""""""""""""""""""" ULTISNIP""""""""""""""""""""
 " Trigger configuration.
-let g:UltiSnipsExpandTrigger="<tab>"
+"let g:UltiSnipsExpandTrigger="<tab>"
 """<C-Space>"
 "let g:UltiSnipsJumpForwardTrigger="<C-b>"
 "let g:UltiSnipsJumpBackwardTrigger="<C-z>"
 "
 "" If you want :UltiSnipsEdit to split your window.
-let g:UltiSnipsEditSplit="vertical"
+"let g:UltiSnipsEditSplit="vertical"
 
 """"""""""""""""""""" SPLITS"""""""""""""""""""""""
 set splitbelow
 set splitright
 nnoremap sb :sbNext <CR>
-nnoremap vb :vert belowright sbNext <CR>
+nnoremap vb <ESC>:TagbarClose <CR> <bar> :vert belowright sbNext<CR>
 nnoremap ve :Vexplore<CR>
 nnoremap se :Sexplore<CR>
 nnoremap + :50winc +<CR>
@@ -366,14 +335,19 @@ let g:DiffModeSync=1
 
 if &diff                             " only for diff mode/vimdiff
 "  set diffopt+=filler,iwhite,icase,context:2
-  set diffopt=filler  ",context:1000000
+  set diffopt=filler,iwhite  ",context:1000000
   set nocursorline
 endif
 autocmd FilterWritePre * if &diff | setlocal wrap< | endif
 
 """"""""""""""""""""" TAB"""""""""""""""""""""
 let g:buftabline_indicators=1
-"let g:buftabline_numbers=1
+let g:buftabline_numbers=0
+let g:buftabline_show=1
+
+"let g:BufTabLineCurrent="TabLineSel"
+"let g:BufTabLineActive="PmenuSel"
+
 
 """"""""""""""""""""" Ack"""""""""""""""""""""""""
 if executable('ag')
