@@ -11,7 +11,7 @@ fi
 
 # User specific aliases and functions
 alias d='cd ..'
-alias fd='find . -name '
+alias fd='find . -iname '
 alias rm='\rm -i '
 alias ka='\killall -s 9 '
 alias ll='ls -al'
@@ -28,11 +28,14 @@ alias vd='gvimdiff'
 #alias vp='gvim -geom 130x80'
 alias vp='vim -g -geom 130x80'
 
+#
+alias ot='$HOME/utils/open_ut.sh '
+
 vfd()
 {
 #    gvim `find -P -03 . -type f -name "*$1*"`
     gvim `find -O3 -P . -path ./lib -prune -o -path obj -prune -o -path ./libtest -prune -o -path ./framework/lib -prune -o \
-     -name '*.o*' -prune -o -name '*.d' -prune -o -type f -name "*$1*" -print`
+     -name '*.o*' -prune -o -name '*.d' -prune -o -type f -iname "*$1*" -print`
 #extension="${filename##*.}"
 }
 
@@ -92,19 +95,30 @@ mk_release() {
     mkdir -p $DEST
 # cp $DEV_ROOT/defacto/src/libstar/obj/test/release/star_release.exe $DEST
     cp $DEV_ROOT/defacto/src/libstar/obj/test/release64/star_release64.exe $DEST
-    cp $DEV_ROOT/defacto/src/libtclapi/obj/test/release64/tclapi_release64.exe $DEST
+    cp $DEV_ROOT/defacto/src/libtclapi/obj/test/release64/tclapi_exec_release64.exe $DEST
   else
     echo "Binary NOT copied"
   fi
   cd -
 }
 
-alias utd='ut_debug -i --debug '
-alias utall='cd $DEV_ROOT/defacto/src ; dev_so ; mks all && { ut_run ; cd framework ; dev_so ; ut_run ; ut_res ; cd .. ; ut_res ; }'
-alias utprod='cd $DEV_ROOT/defacto/src ; dev_so ; mks libtclcmd && mks libstar  && mks libtclapi  && mks libptsi  && mks libscan; ut_prod_reduced'
+#alias utall='cd $DEV_ROOT/defacto/src ; dev_so ; mks all && { ut_run ; cd framework ; dev_so ; ut_run ; ut_res ; cd .. ; ut_res ; }'
+
+utall() {
+  cd $DEV_ROOT/defacto/src ; dev_so ; mks all &&
+  ut_debug -j5;  cd framework; ut_debug -j5;  cd -
+}
 
 utr () {
-  mks $1 && ut_run $1 && ut_res
+  mks $1 && ut_debug -j5 "$@" && ut_res
+}
+
+utd () {
+  if [ -d $1 ]; then
+    mks $1 && ut_debug -j5 "$@" && ut_res
+  else
+    ut_debug -j5 "$@" && ut_res
+  fi
 }
 complete -C "ut_debug --_complete" utd
 

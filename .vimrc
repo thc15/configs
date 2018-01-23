@@ -14,7 +14,7 @@ call plug#begin('~/.vim/plugged')
 " Bundle 'gmarik/vundle'
 
 " original repos on github
-Plug 'desert-warm-256'
+Plug 'vim-scripts/desert-warm-256'
 
 Plug 'https://github.com/vim-scripts/perl-support.vim.git'
 Plug 'https://github.com/altercation/vim-colors-solarized.git'
@@ -43,6 +43,8 @@ Plug 'https://github.com/vhda/verilog_systemverilog.vim.git'
 
 "Plug 'https://github.com/Shougo/neocomplcache.vim.git'
 "Plug 'https://github.com/Valloric/YouCompleteMe.git'
+
+call plug#end()
 
 """""""""""""""""""""""""""""""""""""""""""""
 syntax on
@@ -139,6 +141,8 @@ noremap <F9> :wa <CR> :make -j5 -s -w -C $DEV_ROOT/defacto/src/framework/
 vmap cc :s/^/\/\/ /<CR>
 vmap cu :s/\v^(\/\/\|#)//<CR>
 
+" Use blackhole register to paste (keeps yanked text)
+vmap p "_dP
 
 """"""""""""""""""""COLORS""""""""""""""""""""""
 colorscheme desert
@@ -216,92 +220,6 @@ let g:SuperTabDefaultCompletionType='<c-x><c-u><c-p>'
 "let g:ycm_filetype_specific_completion_to_disable = {
 "        \ 'gitcommit': 1
 "        \}
-
-""""""""""""""""""""" VimCompletesMe"""""""""""""""""""""
-"autocmd FileType ruby let b:vcm_tab_complete = "omni"
-
-""""""""""""""""""""" NEOCOMPLETECACHE""""""""""""""""""""""
-"" Disable AutoComplPop.
-"let g:acp_enableAtStartup = 0
-"let g:neocomplcache_enable_at_startup = 0
-"" Use smartcase.
-"let g:neocomplcache_enable_smart_case = 1
-"" Use camel case completion.
-"let g:neocomplcache_enable_camel_case_completion = 1
-"" Use underscore completion.
-""let g:neocomplcache_enable_underbar_completion = 1 slow
-"" Sets minimum char length of syntax keyword.
-"let g:neocomplcache_min_syntax_length = 1
-"" buffer file name pattern that locks neocomplcache. e.g. ku.vim or fuzzyfinder 
-""let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
-"let g:neocomplcache_auto_completion_start_length=2
-"let g:neocomplcache_enable_auto_close_preview = 0
-"" Define keyword, for minor languages
-"if !exists('g:neocomplcache_keyword_patterns')
-"  let g:neocomplcache_keyword_patterns = {}
-"endif
-"let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
-"
-"" Plugin key-mappings.
-""inoremap <expr><C-g>     neocomplcache#undo_completion()
-""inoremap <expr><C-l>     neocomplcache#complete_common_string()
-"
-"" SuperTab like snippets behavior.
-""imap <expr><TAB> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : pumvisible() ? "\<C-n>" : "\<TAB>"
-"
-"" Recommended key-mappings.
-"" <CR>: close popup and save indent.
-"inoremap <expr><CR> pumvisible() ? neocomplcache#close_popup() : "\<CR>"
-"inoremap <expr>.  neocomplcache#close_popup() . "."
-"inoremap <expr>(  neocomplcache#close_popup() . "("
-"inoremap <expr>)  neocomplcache#close_popup() . ")"
-"inoremap <expr><space>  neocomplcache#close_popup() . " "
-"inoremap <expr>;  neocomplcache#close_popup() . ";"
-"" <TAB>: completion.
-"inoremap <expr><C-Space>  pumvisible() ? "\<C-n>" : ""
-"inoremap <expr><S-Space>  pumvisible() ? "\<C-p>" : ""
-"""" <C-h>, <BS>: close popup and delete backword char.
-""""inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
-"""inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
-"""inoremap <expr><C-y>  neocomplcache#close_popup()
-"""inoremap <expr><C-e>  neocomplcache#cancel_popup()
-"""inoremap <expr><ESC> pumvisible() ? neocomplcache#cancel_popup() : "\<esc>"
-"""
-"""" AutoComplPop like behavior.
-"""let g:neocomplcache_enable_auto_select = 1
-""
-""" Shell like behavior(not recommended).
-"""let g:neocomplcache_disable_auto_complete = 1
-"""inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<TAB>"
-"""inoremap <expr><CR>  neocomplcache#smart_close_popup() . "\<CR>"
-""
-""" Enable heavy omni completion, which require computational power and may stall the vim. 
-""if !exists('g:neocomplcache_force_omni_patterns')
-""  let g:neocomplcache_force_omni_patterns = {}
-""endif
-""let g:neocomplcache_force_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)\%(\h\w*\)\?'
-""let g:neocomplcache_force_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\%(\h\w*\)\?\|\h\w*::\%(\h\w*\)\?'
-"""
-""" For perlomni.vim setting.
-""" https://github.com/c9s/perlomni.vim
-""let g:neocomplcache_force_omni_patterns.perl = '[^. \t]->\%(\h\w*\)\?\|\h\w*::\%(\h\w*\)\?'
-"
-"if !exists('g:neocomplcache_omni_patterns')
-"let g:neocomplcache_omni_patterns = {}
-"endif
-"let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
-"let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
-
-"
-"""""""""""""""""""""" ULTISNIP""""""""""""""""""""
-" Trigger configuration.
-"let g:UltiSnipsExpandTrigger="<tab>"
-"""<C-Space>"
-"let g:UltiSnipsJumpForwardTrigger="<C-b>"
-"let g:UltiSnipsJumpBackwardTrigger="<C-z>"
-"
-"" If you want :UltiSnipsEdit to split your window.
-"let g:UltiSnipsEditSplit="vertical"
 
 """"""""""""""""""""" SPLITS"""""""""""""""""""""""
 set splitbelow

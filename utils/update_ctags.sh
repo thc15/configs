@@ -34,26 +34,38 @@ ctags -R --c++-kinds=+p --fields=+ilaS --extra=+q  --excmd=number \
        --exclude=$DEV_ROOT/defacto/src/framework/libswig/test \
        -f $DEV_ROOT/tags $DEV_ROOT
 
-echo "Generating  $DEV_ROOT/.clang_complete"
-# -V -L $TAG_FILELIST
- #cd $DEV_ROOT
- #echo "Building clang_complete file"
- #make CC='~/.vim/bin/cc_args.py gcc' CXX='~/.vim/bin/cc_args.py g++' -B
- #cd -
+echo "Generating .clang_complete files"
+ROOT="$DEV_ROOT/defacto/src"
+UPDATE_DONE=0
 
- echo "-pthread
--std=c++11
--g
--DDEFACTO_INCLUDE
--DCOMPIL_DEBUG
--DHIDFT64
--DHIDFTLMGR10
--DENABLE_TRACE
+cd $DEV_ROOT/3rdparty/verific
+echo "Generating .clang_complete for $DEV_ROOT/3rdparty/verific"
+if [ ! -f  $DEV_ROOT/3rdparty/verific/lib/verilog/.clang_complete ]; then
+  make ADD_CPPFLAGS=-DDISABLE_LICENSES CC="$HOME/.vim/bin/cc_args.py g++" CXX="$HOME/.vim/bin/cc_args.py g++" CPP="$HOME/.vim/bin/cc_args.py g++" -i -b -B -j 8 -s
+  UPDATE_DONE=1
+ fi
 
--I3rdparty/verific/lib/*/src
--Idefacto/src/lib*/src
--Idefacto/src/framework/lib*/src" > $DEV_ROOT/.clang_complete
+cd $ROOT
+for m in `find $ROOT -name Makefile`  # | grep -v -E 'examples|doc|tcl|edit|expat|metis|xalan'`
+do
+    D=`dirname $m`
+    if [ "$D" == "$ROOT" ]; then continue; fi
+    if [ "$D" == "$ROOT/framework" ]; then continue; fi
+    TMP=`echo $D | grep libtest`
+    if [ -n "$TMP" ]; then continue; fi
 
+    echo $D
+    cd $D
+    if [ ! -f $D/.clang_complete ]; then
+      echo "Generating .clang_complete for $D"
+      make ADD_CPPFLAGS=-DDISABLE_LICENSES CC="$HOME/.vim/bin/cc_args.py g++" CXX="$HOME/.vim/bin/cc_args.py g++" CPP="$HOME/.vim/bin/cc_args.py g++" -i -b -B -j 8 -s
+      UPDATE_DONE=1
+     fi
+    cd $ROOT
+done
 
-
-
+if [ "$UPDATE_DONE" -eq "1" ]; then
+  make clean -C $DEV_ROOT/3rdparty/verific
+  make clean -C $DEV_ROOT/3rdparty/expat
+  make clean -C $DEV_ROOT/3rdparty/tcl
+fi
