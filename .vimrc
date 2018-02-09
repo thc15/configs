@@ -37,11 +37,7 @@ Plug 'https://github.com/vim-scripts/BufOnly.vim.git'
 Plug 'https://github.com/vim-scripts/bufferlist.vim.git'
 Plug 'mileszs/ack.vim'
 Plug 'https://github.com/vhda/verilog_systemverilog.vim.git'
-"Plug 'https://github.com/vim-scripts/OmniCppComplete.git'
 "Plug 'https://github.com/vim-scripts/Conque-GDB.git'
-"Plug 'https://github.com/ajh17/VimCompletesMe.git'
-
-"Plug 'https://github.com/Shougo/neocomplcache.vim.git'
 "Plug 'https://github.com/Valloric/YouCompleteMe.git'
 
 call plug#end()
@@ -125,7 +121,8 @@ map <F1> :tn <CR>
 map <F5> :source $HOME/.vimrc <CR>
 map <F6> :! $HOME/utils/update_ctags.sh & <CR>
 
-noremap <C-M> :set columns=235 <CR> :wincmd =<CR> :cclose <CR> :TagbarToggle <CR>
+noremap <C-M> :set columns=235 <CR> :cclose <CR> :TagbarToggle <CR> :wincmd =<CR>
+noremap <F11> :set columns=310 <CR>
 nnoremap <C-o> :BufOnly <CR>
 noremap <F4> :bp<CR>:bd # <CR>
 noremap <C-s-t> :vs<bar>:b#<CR>
@@ -160,6 +157,24 @@ hi CursorLine cterm=bold guifg=NONE guibg=#525252
 
 """""""""""""""""""" TAGS""""""""""""""""""""""
 set tags=$DEV_ROOT/tags;
+
+noremap <C-Rightmouse>  
+noremap <C-Leftmouse> 
+
+"""""""""""""""""""" CSCOPE""""""""""""""""""""""
+set cscopequickfix=s-,c-,d-,i-,t-,e-
+
+if has("cscope")
+ set csprg='/local_home/thomas/soft/local/usr/bin/cscope'
+ set csto=1
+ set cst
+ set csverb
+ set cspc=3
+ silent cs add $DEV_ROOT/cscope.out
+ nmap l :cs find c <C-R>=expand("<cword>")<CR><CR>
+ nmap L :cs find s <C-R>=expand("<cword>")<CR><CR>
+ set nocst "default use tag shortcuts (C-])
+endif
 
 " snippets
 let g:UltiSnipsExpandTrigger="<tab>"
@@ -225,7 +240,7 @@ let g:SuperTabDefaultCompletionType='<c-x><c-u><c-p>'
 set splitbelow
 set splitright
 nnoremap sb :sbNext <CR>
-nnoremap vb <ESC>:TagbarClose <CR> <bar> :vert belowright sbNext<CR>
+nnoremap vb <ESC> :vert belowright sbNext<CR> :wincmd =<CR>
 nnoremap ve :Vexplore<CR>
 nnoremap se :Sexplore<CR>
 nnoremap + :50winc +<CR>
@@ -263,8 +278,8 @@ let g:buftabline_indicators=1
 let g:buftabline_numbers=0
 let g:buftabline_show=1
 
-"let g:BufTabLineCurrent="TabLineSel"
-"let g:BufTabLineActive="PmenuSel"
+let g:BufTabLineCurrent="TabLine"  "current window
+let g:BufTabLineActive="TabLineSel" "other window
 
 
 """"""""""""""""""""" Ack"""""""""""""""""""""""""

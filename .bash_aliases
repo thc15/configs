@@ -15,6 +15,7 @@ alias fd='find . -iname '
 alias rm='\rm -i '
 alias ka='\killall -s 9 '
 alias ll='ls -al'
+alias rm_log='rm -f logfile_*'
 
 # grep
 alias gr='grep -nri'

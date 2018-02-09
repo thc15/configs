@@ -1,0 +1,76 @@
+
+# Port server X: 5900
+# Remote Connection
+ssh -X IP -L 5900:IP_LOCAL:5900 -p 4422
+vncviewer localhost:5900
+
+#commit in specific commit
+git rebase --interactive 'bbc643cd^'
+git commit --amend --no-edit
+git rebase --continue
+
+# git patch
+git format-patch ...
+git am --reject    -> apply all hunks that apply cleanly
+fd *.rej
+
+# git clean
+-n -> dryrun
+-fd -> dir...
+
+#python
+python -m flake8
+export PYTHONPATH=$HOME/soft/local/lib/python3.3/site-packages:$PYTHONPATH
+
+#swig
+make -j 8 -C libswig SWIG_LANGUAGE=java ADD_LDFLAGS=-Wl,--no-undefined
+
+# Cppcheck
+# build cppcheck: PREFIX=$HOME/soft/local CFGDIR=$HOME/soft/cppcheck/cfg make all install
+cppcheck -j8  -rp=. --enable=all --language=c++ -i linux_x86 -i ctl.y -i rtlobjectfilelist.y -i rtlobjectfilelist.l -USWIG -USWIGPERL -DENABLE_TRACE . 2> ~/tmp/cppcheck_all.log
+
+
+
+#valgrind
+valgrind --tool=memcheck --leak-check=full --keep-stacktraces=alloc-and-free|alloc-then-free
+valgrind --tool=memcheck --leak-check=full --keep-stacktraces=alloc-and-free 
+valgrind -v --leak-check=full --track-origins=yes  --keep-stacktraces=alloc-and-free 
+
+
+addr2line -p -f -C -e $STAR_EXE 0x87419F6
+
+# clean up
+while read L; do rm -f $L; done < tmp
+
+#ssh
+ssh -p 4422
+
+#cmake
+cmake -DCMAKE_INSTALL_PREFIX="$HOME/soft/local"
+
+# build curl
+env PKG_CONFIG_PATH=$HOME/soft/local/lib64/pkgconfig ./configure --prefix=$HOME/soft/local --with-ssl --with-libssh2=$HOME/soft/libssh2
+# build openssh
+CPPFLAGS=-I$HOME/soft/local/include LDFLAGS=-L$HOME/soft/local/lib ./configure --prefix=$HOME/soft/local --with-ssl-dir=$HOME/soft/local
+#build git
+export LDFLAGS=-L$HOME/soft/local/lib64
+export CFLAGS=-I$HOME/soft/local/usr/include/
+export LIBS=$HOME/soft/local/lib64/libcurl.so.4
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/soft/local/usr/lib64
+env PKG_CONFIG_PATH=$HOME/soft/local/lib64/pkgconfig ./configure --prefix=$HOME/soft/local --with-openssl -with-curl
+
+# extract rpm
+cd $HOME/soft/local ; rpm2cpio <rpmf_file> |  cpio -idvm
+
+# GDB
+save breakpoints b.gdb
+source b.gdb
+
+checkpoint
+
+restore n
+
+
+# cut after N char
+sed -e "s/.\{150\}/&\n/g" < tc3_copyconnectedNode_map.log
+

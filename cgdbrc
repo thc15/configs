@@ -1,0 +1,19 @@
+
+
+#####################################
+set ignorecase
+set autosourcereload=on
+set hlsearch
+set wrapscan
+set syntax=c
+
+################## SPLIT ##################
+#set splitorientation=vertical
+#set so=vertical
+set winsplitorientation=vertical
+set winsplit=gdb_big
+
+set timeoutlen=0
+
+# Show debug commands
+#set sdc
