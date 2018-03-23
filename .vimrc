@@ -21,24 +21,29 @@ Plug 'https://github.com/altercation/vim-colors-solarized.git'
 Plug 'https://github.com/vim-scripts/ctags.vim.git'
 Plug 'https://github.com/scrooloose/nerdtree.git'
 "Plug 'https://github.com/scrooloose/nerdcommenter.git'
-Plug 'https://github.com/majutsushi/tagbar.git'
 Plug 'https://github.com/ap/vim-buftabline.git'
 Plug 'https://github.com/vim-scripts/cpp.vim.git'
 Plug 'https://github.com/vim-scripts/python.vim.git'
 Plug 'https://github.com/tpope/vim-fugitive.git'
-Plug 'https://github.com/kien/ctrlp.vim.git'
+Plug 'https://github.com/vim-airline/vim-airline.git'
+Plug 'https://github.com/vim-airline/vim-airline-themes.git'
+Plug 'https://github.com/majutsushi/tagbar.git'
+"Plug 'https://github.com/kien/ctrlp.vim.git'
+Plug 'https://github.com/ctrlpvim/ctrlp.vim'
+Plug 'jacquesbh/vim-showmarks'
 "" Snippets
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'https://github.com/vim-scripts/clang-complete.git'
 Plug 'https://github.com/ervandew/supertab.git'
-"Plug 'https://github.com/scrooloose/syntastic.git'
+Plug 'https://github.com/scrooloose/syntastic.git'
 Plug 'https://github.com/vim-scripts/BufOnly.vim.git'
 Plug 'https://github.com/vim-scripts/bufferlist.vim.git'
 Plug 'mileszs/ack.vim'
 Plug 'https://github.com/vhda/verilog_systemverilog.vim.git'
 "Plug 'https://github.com/vim-scripts/Conque-GDB.git'
 "Plug 'https://github.com/Valloric/YouCompleteMe.git'
+Plug 'https://github.com/python-mode/python-mode.git'
 
 call plug#end()
 
@@ -91,7 +96,8 @@ set t_BE=
 noremap <C-Left> :bp <CR>
 noremap <C-Right> :bn <CR>
 
-map <C-Middlemouse> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
+nmap <C-Middlemouse> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
+nmap <c-d> :cs find g <c-r>=expand("<cword>")<cr><cr>
 
 " Ignore these directories
 set wildignore+=*/tmp/*
@@ -106,15 +112,19 @@ set wildignore+=*.so,*.swp,*.zip,*.o,*.l,*.y,*.a,*.exe,*.gold
 set path+=$DEV_ROOT/**
 
 autocmd! bufwritepost .vimrc source %
-autocmd filetype python set expandtab
 " quickwindow
 autocmd FileType qf wincmd J
 
-autocmd FocusLost *.[ch] silent! :wa!
-autocmd FocusLost *.[ch]pp silent! :wa!
+autocmd FocusLost,BufLeave *.[ch] silent! :wa!
+autocmd FocusLost,BufLeave *.[ch]pp silent! :wa!
+autocmd FocusLost,BufLeave *.sv silent! :wa!
+autocmd FocusLost,BufLeave *.log silent! :wa!
+autocmd FocusLost,BufLeave *.txt silent! :wa!
+autocmd FocusLost,BufLeave *.py silent! :wa!
 autocmd! * *.log
 autocmd! * *.txt
 autocmd! * *.gold
+autocmd BufEnter * silent! :DoShowMarks!
 
 map <F1> :tn <CR>
 
@@ -259,7 +269,6 @@ nnoremap <C-PageUp> [c
 nnoremap <C-g> :diffget<CR>
 nnoremap ,g :%diffget<CR>
 nnoremap <C-p> :diffput<CR>
-nnoremap <C-d> :windo diffthis<CR>
 
 "let g:DiffUnit="Word1"
 "let g:DiffColors=323
@@ -281,6 +290,16 @@ let g:buftabline_show=1
 let g:BufTabLineCurrent="TabLine"  "current window
 let g:BufTabLineActive="TabLineSel" "other window
 
+""""""""""""""""""""" Airline"""""""""""""""""""""
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#formatter = 'default'
+let g:airline#extensions#ctrlp#show_adjacent_modes = 1
+let g:airline#extensions#syntastic#enabled = 1
+"let g:airline_theme='solarized'
+"let g:airline_solarized_bg='light'
+let g:airline_theme='lucius' "cool
+" avoid issues with buffer changes
+let g:airline#extensions#tagbar#enabled = 0
 
 """"""""""""""""""""" Ack"""""""""""""""""""""""""
 if executable('ag')
@@ -307,7 +326,6 @@ let g:BufferListMaxWidth = 50
 let g:ctrlp_map = '<c-f>'
 let g:ctrlp_cmd = 'CtrlP'
 let g:ctrlp_working_path_mode = 'ra'
-let g:ctrlp_clear_cache_on_exit = 0
 let g:ctrlp_by_filename = 1
 let g:ctrlp_max_files = 600
 let g:ctrlp_max_depth = 20
@@ -328,6 +346,7 @@ let g:ctrlp_user_command = '$HOME/soft/local/bin/ag %s -i
       \ --ignore .hg
       \ --ignore .DS_Store
       \ --ignore test
+      \ --ignore golden
       \ --ignore "*tmp*"
       \ --ignore "**/*.pyc"
       \ --ignore "obj"
@@ -368,6 +387,11 @@ command! -nargs=*  Dc :ConqueGdbCommand <args>
 "let g:syntastic_auto_loc_list = 1
 "let g:syntastic_check_on_open = 1
 "let g:syntastic_check_on_wq = 0
+let g:syntastic_c_checkers=['make','splint']
+
+""""""""""""""""" Python"""""""""""""""""
+"let g:pymode_python = 'python3'
+autocmd filetype python set expandtab
 
 """"""""""""""""" NerdTree"""""""""""""""""
 "nnoremap <C-n> :NERDTree $DEV_ROOT<CR>
