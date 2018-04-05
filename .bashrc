@@ -76,10 +76,7 @@ function init_env {
     exit
   fi
   export DEV_ROOT="$1"
-  export DFT_BUILD_ROOT="$DEV_ROOT/defacto/src"
   export HIDFT_HOME="$DEV_ROOT/dist"
-  export STAR_EXE="$DEV_ROOT/defacto/src/libstar/obj/test/debug64/star_debug64.exe"
-  export TCLAPI_EXE="$DEV_ROOT/defacto/src/libtclapi/obj/test/debug64/tclapi_exec_debug64.exe"
   source $DEV_ROOT/build/source_me.sh
 }
 

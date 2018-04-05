@@ -28,22 +28,20 @@ ctags -R --c++-kinds=+p --fields=+ilaS --extra=+q  --excmd=number \
        --exclude=*.log \
        --exclude=*.gold* \
        --exclude=*.mak \
-       --exclude=$DEV_ROOT/3rdparty/boost \
-       --exclude=$DEV_ROOT/3rdparty/verific/examples \
-       --exclude=$DEV_ROOT/3rdparty/verific/test \
-       --exclude=$DEV_ROOT/defacto/src/framework/libswig/test \
        -f $DEV_ROOT/tags $DEV_ROOT
 
-echo "Generating .clang_complete files"
-ROOT="$DEV_ROOT/defacto/src"
-UPDATE_DONE=0
+#################################################################################
+echo "Generating cscope for $DEV_ROOT"
 
-cd $DEV_ROOT/3rdparty/verific
-echo "Generating .clang_complete for $DEV_ROOT/3rdparty/verific"
-if [ ! -f  $DEV_ROOT/3rdparty/verific/lib/verilog/.clang_complete ]; then
-  make ADD_CPPFLAGS=-DDISABLE_LICENSES CC="$HOME/.vim/bin/cc_args.py g++" CXX="$HOME/.vim/bin/cc_args.py g++" CPP="$HOME/.vim/bin/cc_args.py g++" -i -b -B -j 8 -s
-  UPDATE_DONE=1
- fi
+TMP_CSCOPE=`mktemp`
+find  $DEV_ROOT -name '*.[ch]*' | grep -v -E '(.git|.svn|libtest|linux_x86|build|golden|examples|dist|doc|\.com)' > $TMP_CSCOPE
+$HOME/soft/local/usr/bin/cscope -Rbq -i $TMP_CSCOPE -f $DEV_ROOT/cscope.out
+
+#################################################################################
+
+echo "Generating .clang_complete files"
+ROOT="$DEV_ROOT/"
+UPDATE_DONE=0
 
 cd $ROOT
 for m in `find $ROOT -name Makefile`  # | grep -v -E 'examples|doc|tcl|edit|expat|metis|xalan'`

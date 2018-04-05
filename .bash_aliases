@@ -50,78 +50,9 @@ vdd()
 # dev
 alias cdr='cd $DEV_ROOT'
 alias cdv='cd $DEV_ROOT/3rdparty/verific/lib/verilog/src'
-alias cds='cd $DEV_ROOT/defacto/src'
-alias cdt='cd $DEV_ROOT/defacto/src/libtest/test/testcases/defacto'
 alias cdb='cd $DEV_ROOT/build'
 alias hg='history | grep -ni '
 alias pg='ps -ef | grep -ni '
-
-mks () {
-#  DISABLE_LICENSE="yes"
-  MK="make -j5 -s"
-  export ADD_CPPFLAGS=-DDISABLE_LICENSES
-  if [ "$#" == "0" ]; then
-    echo "Building libcmd libtclmd libstar"
-    pushd .
-    cd $DEV_ROOT/defacto/src
-    ${MK} -C "$DEV_ROOT/defacto/src/framework/libcmd"
-    ${MK} -C "$DEV_ROOT/defacto/src/libtclcmd" && ${MK} -C "$DEV_ROOT/defacto/src/libstar"
-    popd
-  elif [ "$1" == "all" ]; then
-    echo "Building all $DEV_ROOT/defacto/src + framework"
-    ${MK} -C "$DEV_ROOT/defacto/src/framework" all
-    ${MK} -C "$DEV_ROOT/defacto/src" all
-  else
-   if [ -d "$DEV_ROOT/defacto/src/framework/$1" ]; then
-     echo "Building $1"
-     ${MK} -C "$DEV_ROOT/defacto/src/framework/$1"
-   elif [ -d "$DEV_ROOT/defacto/src/$1" ] ; then
-     echo "Building $1"
-     ${MK} -C "$DEV_ROOT/defacto/src/$1"
-   else
-     echo "$1 not found"
-   fi
-  fi
-}
-
-mk_release() {
-  unset ADD_CPPFLAGS
-  echo $ADD_CPPFLAGS
-  cd $DEV_ROOT/defacto/src
-  DIST=release make -j5 -C libstar
-  DIST=release make -j5 -C libtclapi
-#  ARCH=32 DIST=release make -j5 -C libstar
-  if [ -f $DEV_ROOT/defacto/src/libstar/obj/test/release64/star_release64.exe ]; then
-    DEST=/home/thomas/tmp/bin/`date +%Y%m%d_%H%M`
-    mkdir -p $DEST
-# cp $DEV_ROOT/defacto/src/libstar/obj/test/release/star_release.exe $DEST
-    cp $DEV_ROOT/defacto/src/libstar/obj/test/release64/star_release64.exe $DEST
-    cp $DEV_ROOT/defacto/src/libtclapi/obj/test/release64/tclapi_exec_release64.exe $DEST
-  else
-    echo "Binary NOT copied"
-  fi
-  cd -
-}
-
-#alias utall='cd $DEV_ROOT/defacto/src ; dev_so ; mks all && { ut_run ; cd framework ; dev_so ; ut_run ; ut_res ; cd .. ; ut_res ; }'
-
-utall() {
-  cd $DEV_ROOT/defacto/src ; dev_so ; mks all &&
-  ut_debug -j5;  cd framework; ut_debug -j5;  cd -
-}
-
-utr () {
-  mks $1 && ut_debug -j5 "$@" && ut_res
-}
-
-utd () {
-  if [ -d $1 ]; then
-    mks $1 && ut_debug -j5 "$@" && ut_res
-  else
-    ut_debug -j5 "$@" && ut_res
-  fi
-}
-complete -C "ut_debug --_complete" utd
 
 function dev_so {
   export DFT_BUILD_ROOT=$PWD
@@ -142,7 +73,7 @@ function dev_so {
 function oe {
   if [ "$1" != "" ] && [ "$COLORTERM" == "gnome-terminal" ]; then
     export env="$1"
-    gnome-terminal --geometry=175x75+0+0 --working-directory="$HOME/work/sandbox/$1/defacto/src" \
+    gnome-terminal --geometry=175x75+0+0 --working-directory="$DEV_ROOT" \
       --tab -e 'bash -c "export BASH_POST_RC=\"so_tag $env\" ; exec bash "' \
       --tab -e 'bash -c "export BASH_POST_RC=\"so_tag $env\" ; exec bash "' \
       --tab -e 'bash -c "export BASH_POST_RC=\"so_tag $env\" ; exec bash "'
@@ -152,7 +83,7 @@ function oe {
 function dbg {
   if [ "$1" != "" ]; then
     gnome-terminal --geometry=240x73+200+0 \
-                   --working-directory="$DEV_ROOT/defacto/src" \
+                   --working-directory="$DEV_ROOT/" \
                    --title="DBG $1" \
                    -e "cgdb $1"
   fi
@@ -192,9 +123,4 @@ alias gdl="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset 
 
 #svn
 alias sl="svn log | perl -l40pe 's/^-+/\n/' | less"
-alias sba='svn ls svn+ssh://cheesecake/svn/dev/branches --verbose'
-sdt () {
-  svn diff svn+ssh://cheesecake/svn/trunk svn+ssh://cheesecake/svn/dev/branches/$1
-}
-
 

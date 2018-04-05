@@ -2,12 +2,12 @@
 
 tmp=$(mktemp)
 func="$1"
-exe="/local_home/thomas/work/sandbox/trunk/defacto/src/framework/librtledit/obj/test/debug64/rtledit_debug64.exe"
+exe=""
 cmdfile="$HOME/tmp/cmd.gdb"
 
 echo "Dump gdb file -> $tmp"
 
-#readelf -s /local_home/thomas/work/sandbox/trunk/defacto/src/framework/librtledit/obj/test/debug64/rtledit_debug64.exe | gawk '
+#readelf -s $exe | gawk '
 nm -gC $exe > $tmp
 
 echo  "set logging on gdb.log" > $cmdfile

@@ -137,12 +137,11 @@ nnoremap <C-o> :BufOnly <CR>
 noremap <F4> :bp<CR>:bd # <CR>
 noremap <C-s-t> :vs<bar>:b#<CR>
 
-noremap <F12> :%s/\/\(local_home\\|home\\|remote_home\)\/.*\/defacto\/src/\/defacto\/src/g <CR>
 " open header/cpp files
 noremap ,h :e %:p:s,.h$,.X123X,:s,.cpp$,.h,:s,.X123X$,.cpp,<CR>
 autocmd QuickFixCmdPost [^l]* nested cwindow
 autocmd QuickFixCmdPost    l* nested lwindow
-noremap <F9> :wa <CR> :make -j5 -s -w -C $DEV_ROOT/defacto/src/framework/
+noremap <F9> :wa <CR> :make -j5 -s -w -C $DEV_ROOT/
 "command! -nargs=* Mk silent make -w -C <args> | cwindow 3
 
 vmap cc :s/^/\/\/ /<CR>
@@ -333,10 +332,11 @@ let g:ctrlp_use_caching = 1
 let g:ctrlp_clear_cache_on_exit = 1
 let g:ctrlp_cache_dir = $HOME . '/.cache/ctrlp'
 "let g:ctrlp_lazy_update = 50
-"let g:ctrlp_extensions = ['tag', 'buffertag']
+let g:ctrlp_extensions = ['tag', 'mixed']
 let g:ctrlp_switch_buffer = 'E'
 let g:ctrlp_regexp = 0
 let g:ctrlp_mruf_relative = 1
+let g:ctrlp_types = ['mixed', 'tag']
 
 let g:ctrlp_user_command = '$HOME/soft/local/bin/ag %s -i
       \ --nocolor --nogroup --hidden
