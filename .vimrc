@@ -23,18 +23,17 @@ Plug 'vim-scripts/desert-warm-256'
 Plug 'https://github.com/altercation/solarized'
 Plug 'https://github.com/kristijanhusak/vim-hybrid-material.git'
 Plug 'https://github.com/altercation/vim-colors-solarized.git'
+Plug 'tsiemens/vim-aftercolors'
 
 Plug 'https://github.com/vim-scripts/perl-support.vim.git'
 Plug 'https://github.com/vim-scripts/ctags.vim.git'
-Plug 'https://github.com/chazy/cscope_maps.git'
+"Plug 'https://github.com/chazy/cscope_maps.git'
 Plug 'https://github.com/scrooloose/nerdtree.git'
 "Plug 'https://github.com/scrooloose/nerdcommenter.git'
 Plug 'https://github.com/ap/vim-buftabline.git'
 Plug 'https://github.com/vim-scripts/cpp.vim.git'
 Plug 'https://github.com/vim-scripts/python.vim.git'
 Plug 'https://github.com/tpope/vim-fugitive.git'
-Plug 'https://github.com/vim-airline/vim-airline.git'
-Plug 'https://github.com/vim-airline/vim-airline-themes.git'
 Plug 'https://github.com/majutsushi/tagbar.git'
 Plug 'https://github.com/ctrlpvim/ctrlp.vim'
 Plug 'jacquesbh/vim-showmarks'
@@ -49,7 +48,6 @@ Plug 'mileszs/ack.vim'
 "Plug 'https://github.com/vim-scripts/Conque-GDB.git'
 "Plug 'https://github.com/Valloric/YouCompleteMe.git'
 Plug 'https://github.com/bogado/file-line.git'
-Plug 'https://github.com/chrisbra/vim-autosave.git'
 Plug 'https://github.com/vim-scripts/DoxygenToolkit.vim.git'
 
 call plug#end()
@@ -145,7 +143,7 @@ map <F1> :tn <CR>
 map <F5> :source $HOME/.vimrc <CR>
 "map <F6> :! $HOME/utils/update_ctags.sh & <CR>
 
-noremap <C-M> :set columns=235 <CR> :cclose <CR> :wincmd =<CR>
+noremap <C-M> :set columns=210 <CR> :cclose <CR> :wincmd =<CR>
 noremap <F11> :set columns=310 <CR>
 nnoremap <C-o> :BufOnly <CR>
 noremap <F4> :bp<CR>:bd # <CR>
@@ -166,9 +164,15 @@ vmap cu :s/\v^(\/\/\|#)//<CR>
 vmap p "_dP
 
 """"""""""""""""""""COLORS""""""""""""""""""""""
+
 set background=dark
 "colorscheme hybrid_reverse
-colorscheme desert
+
+if has("gui_running")
+  colorscheme desert
+else
+  colorscheme desert-warm-256
+endif
 
 "hi DiffText term=reverse cterm=bold ctermbg=12 gui=bold guifg=White guibg=#a02222
 "hi DiffChange term=reverse cterm=bold ctermbg=12 guifg=White guibg=#173117
@@ -181,48 +185,46 @@ hi StatusLineNC guibg=#8c8e91 guifg=#44484f gui=bold
 "hi CursorLine cterm=bold guifg=NONE guibg=#525252
 
 """""""""""""""""""" TAGS""""""""""""""""""""""
-set tags=$DEV_ROOT/linux_buildroot/images/k1bio_console_legacy_debug/build/linux-custom/tags,$DEV_ROOT/runtime/tags,$DEV_ROOT/libraries/rpc-firmwares/tags
+set tags=$DEV_ROOT/linux_toolchain/linux/tags
+set tags+=$DEV_ROOT/runtime/tags
+set tags+=$DEV_ROOT/libraries/rpc-firmwares/tags
 
 
-function! GoToTag(tagWord)
-	let l:tagfile = &tags
-	execute 'set tags=' . l:tagfile
-	execute 'tjump ' . a:tagWord
-endfunction
-
-function! Callers(tagWord)
-	let l:tagfile = &tags
-	execute 'set tags=' . l:tagfile
-	execute 'cs find c ' . a:tagWord
-endfunction
-
-function! Called(tagWord)
-	let l:tagfile = &tags
-	execute 'set tags=' . l:tagfile
-	execute 'cs find d ' . a:tagWord
-endfunction
-
-map <C-f> "zyiw:exe "call GoToTag(@z)"<CR>
-map <C-g> "zyiw:exe "call Callers(@z)"<CR>
-map <C-d> "zyiw:exe "call Called(@z)"<CR>
+"function! GoToTag(tagWord)
+"	let l:tagfile = &tags
+"	execute 'set tags=' . l:tagfile
+"	execute 'tjump ' . a:tagWord
+"endfunction
+"
+"function! Callers(tagWord)
+"	let l:tagfile = &tags
+"	execute 'set tags=' . l:tagfile
+"	execute 'cs find c ' . a:tagWord
+"endfunction
+"
+"function! Called(tagWord)
+"	let l:tagfile = &tags
+"	execute 'set tags=' . l:tagfile
+"	execute 'cs find d ' . a:tagWord
+"endfunction
+"
+"map <C-f> "zyiw:exe "call GoToTag(@z)"<CR>
+"map <C-g> "zyiw:exe "call Callers(@z)"<CR>
+"map <C-d> "zyiw:exe "call Called(@z)"<CR>
 
 """""""""""""""""""" CSCOPE""""""""""""""""""""""
-set cscopequickfix=s-,c-,d-,i-,t-,e-
-
-if has("cscope")
- set csto=1
- set cst
- "set csverb
- set nocsverb
- set cspc=3
- silent cs add $DEV_ROOT/linux_buildroot/images/k1bio_console_legacy_debug/build/linux-custom/cscope.out
- silent cs add $DEV_ROOT/runtime/ethernet/cscope.out
- silent cs add $DEV_ROOT/libraries/rpc-firmwares/cscope.out
-" command -nargs=0 Cscope cs add $DEV_ROOT/linux_buildroot/images/k1bio_console_legacy_debug/build/linux-custom/cscope.out
- nmap l :cs find c <C-R>=expand("<cword>")<CR><CR>
- nmap L :cs find s <C-R>=expand("<cword>")<CR><CR>
- set nocst "default use tag shortcuts (C-])
-endif
+"set cscopequickfix=s-,c-,d-,i-,t-,e-
+"
+"if has("cscope")
+" set csto=1
+" "set csverb
+" set nocsverb
+" set cspc=3
+" silent cs add $DEV_ROOT/linux_buildroot/images/k1bio_console_legacy_debug/build/linux-custom/cscope.out
+" silent cs add $DEV_ROOT/runtime/ethernet/cscope.out
+" silent cs add $DEV_ROOT/libraries/rpc-firmwares/cscope.out
+" " set nocst "default use tag shortcuts (C-])
+"endif
 
 " snippets
 let g:UltiSnipsExpandTrigger="<tab>"
@@ -230,75 +232,12 @@ let g:UltiSnipsJumpForwardTrigger="<tab>"
 let g:UltiSnipsJumpBackwardTrigger="<c-tab>"
 "let g:UltiSnipsEditSplit="vertical"
 
-"""""""""""""""""""" AutoSave""""""""""""""""""""""
-let g:autosave_extensions = '.bkp'
-let g:autosave_backup='/work1/tcostis/tmp/backup/vim/'
-let g:autosave_timer=300
-"
-"""""""""""""""""""" CLANG_COMPLETE""""""""""""""""""""""
-"set omnifunc=
-"set completefunc=
-"let g:clang_complete_loaded = 1
-""let g:clang_debug = 1
-"" Disable auto popup, use <Tab> to autocomplete
-"let g:clang_complete_auto = 1
-"" Show clang errors in the quickfix window
-"let g:clang_complete_copen = 1
-"let g:clang_use_library = 1
-"let g:clang_library_path='/local_home/thomas/soft/local/usr/lib64/llvm/'
-"let g:clang_trailing_placeholder = 1
-"let g:clang_close_preview = 1
-"let g:clang_auto_select = 1
-"set conceallevel=2
-"set concealcursor=vin
-"" Don't use snippets for function completion
-""let g:clang_conceal_snippets=1
-""let g:clang_snippets = 1
-""let g:clang_snippets_engine = 'clang_complete'
-"" let g:clang_snippets_engine = 'ultisnips'
-"let g:clang_complete_patterns = 1
-"let g:clang_complete_optional_args_in_snippets = 1
-"" Complete options (disable preview scratch window, longest removed to always show menu)
-"set completeopt=menu,menuone,preview
-"
-"" Limit popup menu height
-"set pumheight=20
-"
-""let g:clang_jumpto_declaration_key = ',d'
-"let g:clang_user_options = '-std=c++11'
-""set complete-=i " disable completion from include files
-"
-
 """""""""""""""""" OmniCppCompletion""""""""""""""""""""
 
 " Enable OmniCompletion
 " http://vim.wikia.com/wiki/Omni_completion
 filetype plugin on
 set omnifunc=syntaxcomplete#Complete
-
-" Configure menu behavior
-" http://vim.wikia.com/wiki/VimTip1386
-inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-inoremap <expr> <C-n> pumvisible() ? '<C-n>' :
-  \ '<C-n><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
-inoremap <expr> <M-,> pumvisible() ? '<C-n>' :
-  \ '<C-x><C-o><C-n><C-p><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
-
-" Use Ctrl+Space for omni-completion
-" http://stackoverflow.com/questions/510503/ctrlspace-for-omni-and-keyword-completion-in-vim
-inoremap <expr> <C-Space> pumvisible() \|\| &omnifunc == '' ?
-  \ "\<lt>C-n>" :
-  \ "\<lt>C-x>\<lt>C-o><c-r>=pumvisible() ?" .
-  \ "\"\\<lt>c-n>\\<lt>c-p>\\<lt>c-n>\" :" .
-  \ "\" \\<lt>bs>\\<lt>C-n>\"\<CR>"
-imap <C-@> <C-Space>
-
-" Popup menu hightLight Group
-"highlight Pmenu ctermbg=13 guibg=LightGray
-"highlight PmenuSel ctermbg=7 guibg=DarkBlue guifg=White
-"highlight PmenuSbar ctermbg=7 guibg=DarkGray
-"highlight PmenuThumb guibg=Black
-
 " enable global scope search
 let OmniCpp_GlobalScopeSearch = 1
 " show function parameters
@@ -318,22 +257,19 @@ let OmniCpp_DisplayMode         = 1
 let OmniCpp_ShowScopeInAbbr     = 0 "do not show namespace in pop-up
 let OmniCpp_DefaultNamespaces = ["std", "_GLIBCXX_STD"]
 set completeopt=menuone,menu,longest
+set complete-=i "remove include file search
+inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
 """""""""""""""""""" SUPERTAB""""""""""""""""""""""
 " SuperTab option for context aware completion
 " SuperTab completion fall-back 
 "let g:SuperTabDefaultCompletionType='<c-x><c-u><c-p>'
 let g:SuperTabDefaultCompletionType = "context"
-let g:SuperTabContextTextOmniPrecedence = ['&omnifunc', '&completefunc']
-function! MyTagContext()
-  if filereadable(expand('%:p:h') . '/tags')
-    return "\<c-x>\<c-]>"
-  endif
-  " no return will result in the evaluation of the next
-  " configured context
-endfunction
-let g:SuperTabCompletionContexts = ['MyTagContext', 's:ContextText', 's:ContextDiscover']
-let g:SuperTabContextDiscoverDiscovery = ["&completefunc:<c-x><c-u>", "&omnifunc:<c-x><c-o>"]
+"let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
+"let g:SuperTabContextTextOmniPrecedence = ['&omnifunc', '&completefunc']
+
+"let g:SuperTabCompletionContexts = ['s:ContextText', 's:ContextDiscover']
+"let g:SuperTabContextDiscoverDiscovery = ["&omnifunc:<c-x><c-u>", "&omnifunc:<c-x><c-o>"]
 
 """""""""""""""""""" YCM""""""""""""""""""""""
 "let g:ycm_min_num_of_chars_for_completion = 2
@@ -391,16 +327,14 @@ let g:buftabline_show=1
 let g:BufTabLineCurrent="TabLineSel"  "current window
 let g:BufTabLineActive="TabLine" "other window
 
-""""""""""""""""""""" Airline"""""""""""""""""""""
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#formatter = 'default'
-let g:airline#extensions#ctrlp#show_adjacent_modes = 1
-let g:airline#extensions#syntastic#enabled = 1
-"let g:airline_theme='solarized'
-"let g:airline_solarized_bg='light'
-let g:airline_theme='lucius' "cool
-" avoid issues with buffer changes
-let g:airline#extensions#tagbar#enabled = 0
+""""""""""""""""""""" Powerline"""""""""""""""""""""
+set rtp+=$HOME/softs/powerline/powerline/bindings/vim/
+set laststatus=2
+set t_Co=256
+
+let g:Powerline_symbols = 'fancy'
+set encoding=utf-8
+set fillchars+=stl:\ ,stlnc:\
 
 """"""""""""""""""""" Ack"""""""""""""""""""""""""
 " prefix with s: for local script-only functions / a: prefix for arguments
@@ -409,9 +343,8 @@ function! s:search(pattern)
   :execute 'Ack --cpp '. a:pattern.' $DEV_ROOT'
 endfunction
 
-map <F3> :execute "noautocmd vimgrep /" .expand("<cword>") . "/j ../*/*.[ch]" <Bar> cw<CR>
-"map <F3> :execute "noautocmd Ack /" ."--cpp" .expand("<cword>") . "$DEV_ROOT" <Bar> cw <CR>
-"map <F3> :execute 'Ack --ignore linux_x86 --cpp <cword> $DEV_ROOT' <CR>
+"map <F3> :execute "noautocmd vimgrep /" .expand("<cword>") . "/j ../*/*.[ch]" <Bar> cw<CR>
+map <F3> :execute "noautocmd Ggrep " .expand("<cword>") <Bar> cw<CR><CR>
 command! -nargs=1 Search call s:search(<f-args>) | lwindow
 
 """"""""""""""""""""" Bufferlist"""""""""""""""""""""""
@@ -420,7 +353,7 @@ let g:BufferListWidth = 30
 let g:BufferListMaxWidth = 50
 
 """"""""""""""""""""" CtrlP"""""""""""""""""""""""
-let g:ctrlp_map = '<C-c>'
+let g:ctrlp_map = '<C-f>'
 let g:ctrlp_cmd = 'CtrlP'
 let g:ctrlp_working_path_mode = 'ra'
 let g:ctrlp_by_filename = 1
@@ -515,4 +448,4 @@ noremap ss :mksession! ~/.vim/sessions/
 noremap rs :so ~/.vim/sessions/
 
 set gfn=Monospace\ Regular\ 8
-syntax on
+syntax enable

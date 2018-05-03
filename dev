@@ -1,87 +1,200 @@
 
-# Port server X: 5900
-# Remote Connection
-ssh -X IP -L 5900:IP_LOCAL:5900 -p 4422
-vncviewer localhost:5900
-
-#commit in specific commit
-git rebase --interactive 'bbc643cd^'
-git commit --amend --no-edit
-git rebase --continue
-
-# git patch
-git format-patch ...
-git am --reject    -> apply all hunks that apply cleanly
-fd *.rej
-
-# git clean
--n -> dryrun
--fd -> dir...
-
-#git 
-git ci --fixup 
-git ci --autosquash
-
-#python
-python -m flake8
-export PYTHONPATH=$HOME/soft/local/lib/python3.3/site-packages:$PYTHONPATH
-
-#swig
-make -j 8 -C libswig SWIG_LANGUAGE=java ADD_LDFLAGS=-Wl,--no-undefined
-
-# Cppcheck
-# build cppcheck: PREFIX=$HOME/soft/local CFGDIR=$HOME/soft/cppcheck/cfg make all install
-cppcheck -j8  -rp=. --enable=all --language=c++ -i linux_x86 -i ctl.y -i rtlobjectfilelist.y -i rtlobjectfilelist.l -USWIG -USWIGPERL -DENABLE_TRACE . 2> ~/tmp/cppcheck_all.log
 
 
 
-#valgrind
-valgrind --tool=memcheck --leak-check=full --keep-stacktraces=alloc-and-free|alloc-then-free
-valgrind --tool=memcheck --leak-check=full --keep-stacktraces=alloc-and-free 
-valgrind -v --leak-check=full --track-origins=yes  --keep-stacktraces=alloc-and-free 
+# Get repo 
+ssh git expand <pattern>
+
+#git
+git co -b aci/tcostis/master
+git submodule update --init --recursive
+git submodule update --merge --recursive
+git submodule foreach --recursive ' git checkout aci/tcostis/master || git checkout -b aci/tcostis/master origin/master'
+
+git pull --rebase origin master
+
+# !!! reset submodule to init state
+
+git submodule update --init 
+
+# git push
+git ci in submodule aci/tcostis/master
+git push in submodule aci/tcostis/master
+git add documents ethernet
+git cs cs
+
+#fetch remote
+git remote add upstream git://git.buildroot.net/buildroot
+git fetch upstream
 
 
-addr2line -p -f -C -e $STAR_EXE 0x87419F6
+# track integration
+check ./valid/hudson/rev_files/
+./kEnv/k1tools/usr/local/k1Req/aci/utils/trackTools.rb contains a31a7f74fb96 software/tools/runtime
 
-# clean up
-while read L; do rm -f $L; done < tmp
+######## linux_buildroot#######
 
-#ssh
-ssh -p 4422
+git clone git:software/tools/linux_buildroot
+vim linux_buildroot_build.info
+./init.sh ./get_k1linux.rb
 
-#cmake
-cmake -DCMAKE_INSTALL_PREFIX="$HOME/soft/local"
+./get_repo.rb --clone-prefix=$PWD/extra_clones
 
-# build curl
-env PKG_CONFIG_PATH=$HOME/soft/local/lib64/pkgconfig ./configure --prefix=$HOME/soft/local --with-ssl --with-libssh2=$HOME/soft/libssh2
-# build openssh
-CPPFLAGS=-I$HOME/soft/local/include LDFLAGS=-L$HOME/soft/local/lib ./configure --prefix=$HOME/soft/local --with-ssl-dir=$HOME/soft/local
-#build git
-export LDFLAGS=-L$HOME/soft/local/lib64
-export CFLAGS=-I$HOME/soft/local/usr/include/
-export LIBS=$HOME/soft/local/lib64/libcurl.so.4
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/soft/local/usr/lib64
-env PKG_CONFIG_PATH=$HOME/soft/local/lib64/pkgconfig ./configure --prefix=$HOME/soft/local --with-openssl -with-curl
+./get_k1linux.rb -> rm -f .k1_polc-src    !!!!
 
-# extract rpm
-cd $HOME/soft/local ; rpm2cpio <rpmf_file> |  cpio -idvm
 
-# GDB
-save breakpoints b.gdb
-source b.gdb
+#tags
+cd $DEV_ROOT/linux_buivp ldroot/extra_clones/linux_toolchain-linux_buildroot/linux
+ARCH=k1 ./scripts/tags.sh tags
 
-checkpoint
+#ln
+linux_buildroot/images/k1bio_console_legacy_debug/build/linux-custom  -> linux_toolchain/linux/
 
-restore n
+# Build buildroot
+./valid/hudson/build.rb -j 32 --linux_config_build=k1bio_console_legacy_debug --toolroot=$K1_TOOLCHAIN_DIR  --novalid build
 
-# pass SIGNINT to prog being debugged
-handle SIGINT stop print pass
-b shshell.cpp:299
- debuginfo-install glibc-2.12-1.166.el6_7.3.x86_64 zlib-1.2.3-29.el6.x86_64
+get_k1runtime.rb -> get pkgs
+get_k1tools.rb -> get tools + pkgs
 
-#memusage (bz 5676)
-valgrind --trace-children=yes --tool=massif $STAR_EXE -f libtest/test/testcases/defacto/verilog/AL_get_interconnections/scripts/pae/tc3.tcl
+./get_k1linux.rb -> get previous floor pkg built
+./get_k1buildroot.rb -> get previous + current floor pkg build
+./get_repo.rb -> src
 
-# cut after N char
-sed -e "s/.\{150\}/&\n/g" < tc3_copyconnectedNode_map.log
+# images
+images/k1bio_console_legacy_debug/images/
 
+
+!!!!!!!!! Timestamp rsync to rm!!!!!
+
+
+#invalid dtb
+lspci | grep -i si
+
+#k1-jtag-runner
+k1-jtag-runner --exec-file=IODDR0:vmlinux
+k1-jtag-runner --exec-file=IODDR0:barebox/build_k1bio_defconfig/barebox
+
+
+#
+/work1/tcostis/work/linux_buildroot/images/k1bio_console_legacy_debug/images
+source ../../../kEnv/k1tools/.switch_env 
+
+# gdb / debug
+k1-jtag-runner --exec-file=IODDR0:vmlinux -D  -- nosmp
+
+k1-gdb -ex "attach-mppa 10000"
+b __k1_start_pe    -> break in fw (RM4)
+b *0X0             -> stop in main fw
+...
+d
+(add-)symbol-file ../target/lib/firmware/ioeth.kelf
+b main
+b __eth_rpc_constructor
+
+
+
+
+# runtime ethernet libmppaeth 
+source ../linux_buildroot/kEnv/k1tools/.switch_env
+./valid/hudson/build.rb --toolroot=$K1_TOOLCHAIN_DIR @ethernet @install --novalid -j16
+..
+#done rsync -av /.//work1/tcostis/work/runtime/devimage/toolchain_default/k1-ethernet/k1/devimage/*   ->  /work1/tcostis/work/linux_buildroot/kEnv/k1tools/usr/local/k1tools/
+
+-> doc doc/mppa_eth.dox  qsfp + 1G DT
+
+
+# rpc-firmware
+cd /work1/tcostis/work/libraries
+source ../linux_buildroot/kEnv/k1tools/.switch_env
+./valid/hudson/build.rb --toolroot=$K1_TOOLCHAIN_DIR rpc_package
+# make install
+cd rpc-firmwares/
+Done rsync -av /work1/tcostis/work/libraries/devimage/k1-libraries/rpc_firmwares/* -> /work1/tcostis/work/linux_buildroot/kEnv/k1tools/usr/local/k1tools/
+make RPCFIRMWARE_PATH=$DEV_ROOT/linux_buildroot/images/k1bio_console_legacy_debug/build/odp_firmware-1.0.0/rpc-firmwares uninstall install
+make RPCFIRMWARE_PATH=$DEV_ROOT/linux_buildroot/kEnv/k1tools/rpc-firmwares uninstall install
+
+#config file
+#ARCH=k1 make menuconfig  NOK
+default : linux_buildroot/images/k1bio_console_legacy_debug/build/linux-custom/arch/k1/configs/k1bio_legacy_debug_defconfig
+vp /work1/tcostis/work/linux_toolchain/linux/.config
+
+#build kernel !!!! include path buildroot/toolchain
+
+rm build/odp_firmware-1.0.0/.stamp_built
+cd /work1/tcostis/work/linux_buildroot/images/k1bio_console_legacy_debug
+install_rpc_firmware
+
+
+
+
+#linux-toolchain
+/work1/tcostis/work/linux_toolchain/linux
+
+
+# Update ethtool / pkg builroot
+$DEV_ROOT/linux_buildroot/buildroot/package/ethtool -> ethtool.mk update version
+
+
+
+#install rpm developper mppa
+cd linux_buildroot
+scp k1-fdt-* k1-bootloaders-* k1-mppapcie-dkms-2.3.0-233.399ab65.master.dirty.noarch.rpm k1-mppaprobe-dkms-3.0.0-312.unstable.399ab65.master.dirty.noarch.rpm k1-mppapcie-netdev-dkms-3.0.0-257.unstable.6d05a82.master.dirty.noarch.rpm tcostis@mppa-dev023:/tmp
+
+# ssh dev machine
+ssh mppa-dev084
+sshfs tcostis@xan-kr1-00053:/work1/tcostis/work /work1/tcostis/work
+$DEV_ROOT/linux_buildroot/images/k1bio_console_legacy_debug/images
+
+cd /work1/tcostis/work/linux_buildroot/
+source kEnv/k1tools/.switch_env
+
+k1-jtag-runner --exec-file=IODDR0:vmlinux
+
+sudo ifconfig mppa0.0.0.0 10.0.0.1
+ssh root@10.0.0.2
+
+lspci | grep -i net    -> Mellanox Technologies MT27520 Family
+ifconfig -a
+
+TBC ifup ... -> break mppa_eth_utils_init_mac_dt
+
+#eth info
+/sbin/ip addr show label eth0
+
+
+# kill ssh session
+<CR><CR>~~.
+
+
+# runners/tools
+k1-pcie-runner
+k1-jtag-runner
+k1-board-ctrl
+
+# fast build
+./valid/hudson/build.rb  --dependency=no --build_type=Debug --toolroot=$K1_TOOLCHAIN_DIR  --novalid vbsp dsm
+
+#tools revision
+valid/hudson/rev_files/tools_v2_revision.src
+
+#GDB
+gdbserver :3344 /usr/bin/hello_world
+k1-linux-gdb -ex "attach-user 10.0.0.2:3344 ~/hello_world/output/bin/hello_world"
+
+
+# DOCs
+smb://atlas/2_shared/Projects   -> ethernet archi
+user + 
+cd /run/user/12754/gvfs/smb-share:server=atlas,share=2_shared
+
+# qsfp, sfp, marvell
+marvell -> /work/common/tmp/88E1111\ datasheet.pdf
+sfp ->  http://www.10gtek.com/templates/wzten/pdf/SFF-8472-(Diagnostic%20Monitoring%20Interface).pdf
+Qsfp -> https://doc.xdevs.com/doc/Seagate/SFF-8636.PDF
+
+#rpc msg
+eth.h -> mppa_rpc_odp_inl_data_t msg header/data
+need more than 4x64 bytes
+
+
+#I2C -> tools/bsp
