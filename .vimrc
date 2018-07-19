@@ -34,8 +34,9 @@ Plug 'https://github.com/ap/vim-buftabline.git'
 Plug 'https://github.com/vim-scripts/cpp.vim.git'
 Plug 'https://github.com/vim-scripts/python.vim.git'
 Plug 'https://github.com/tpope/vim-fugitive.git'
+Plug 'https://github.com/jreybert/vimagit.git'
 Plug 'https://github.com/majutsushi/tagbar.git'
-Plug 'https://github.com/ctrlpvim/ctrlp.vim'
+Plug 'https://github.com/kien/ctrlp.vim.git'
 Plug 'jacquesbh/vim-showmarks'
 "" Snippets
 Plug 'SirVer/ultisnips'
@@ -49,6 +50,13 @@ Plug 'mileszs/ack.vim'
 "Plug 'https://github.com/Valloric/YouCompleteMe.git'
 Plug 'https://github.com/bogado/file-line.git'
 Plug 'https://github.com/vim-scripts/DoxygenToolkit.vim.git'
+
+Plug 'https://github.com/vim-ruby/vim-ruby.git'
+"Plug 'https://github.com/davidhalter/jedi-vim.git'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'https://github.com/vim-scripts/OmniCppComplete.git'
+
 
 call plug#end()
 
@@ -72,7 +80,7 @@ set hidden
 set switchbuf=usetab
 "set autoindent
 set cino+=(0    " indent function args
-"set expandtab
+set expandtab
 set bs=2
 set ts=4
 set shiftwidth=4
@@ -85,7 +93,7 @@ set autoread
 set autowrite
 set wildmenu
 "set wildmode=list:longest
-set wildmode=full
+set wildmode=list:full
 set ruler
 set wrap
 "set iskeyword-=:
@@ -110,13 +118,14 @@ nmap <C-Middlemouse> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
 
 " Ignore these directories
 set wildignore+=*/tmp/*
-set wildignore+=*/build/**
+set wildignore+=*/build*/**
 set wildignore+=*/obj/**
+set wildignore+=*/bin/**
 set wildignore+=*/stubobj/**
 set wildignore+=*/debug*/**
 set wildignore+=*/.git/**
 set wildignore+=*/linux_x86/**
-set wildignore+=*.so,*.swp,*.zip,*.o,*.l,*.y,*.a,*.exe,*.gold
+set wildignore+=*.so,*.swp,*.zip,*.o,*.l,*.y,*.a,*.exe,*.gold,*.out,*.dox
 
 set path+=$DEV_ROOT/**
 
@@ -124,7 +133,12 @@ autocmd! bufwritepost .vimrc source %
 " quickwindow
 autocmd FileType qf wincmd J
 
-autocmd FocusLost,BufLeave * silent! :wa!
+function! SaveFile ()
+    set buftype=
+    write
+endfunction
+autocmd BufWritePre * :call SaveFile()
+autocmd FocusLost,BufLeave *  silent! :wa!
 
 "autocmd FocusLost,BufLeave .* silent! :wa!
 "autocmd FocusLost,BufLeave *.[ch] silent! :wa!
@@ -136,11 +150,19 @@ autocmd FocusLost,BufLeave * silent! :wa!
 autocmd! * *.log
 autocmd! * *.txt
 autocmd! * *.gold
-autocmd BufEnter * silent! :DoShowMarks!
+autocmd BufEnter * silent! nested :DoShowMarks!
+
+autocmd BufEnter * silent! nested lcd %:p:h  "  break fugitive
+
+""""""""""""""""" Python"""""""""""""""""
+"let g:pymode_python = 'python3'
+autocmd BufRead,BufNewFile *.py set expandtab
+autocmd BufRead,BufNewFile *.rb set expandtab
+autocmd BufRead,BufNewFile *.[ch] set noexpandtab
 
 map <F1> :tn <CR>
 
-map <F5> :source $HOME/.vimrc <CR>
+map <F2> :source $HOME/.vimrc <CR>
 "map <F6> :! $HOME/utils/update_ctags.sh & <CR>
 
 noremap <C-M> :set columns=210 <CR> :cclose <CR> :wincmd =<CR>
@@ -151,7 +173,19 @@ noremap <C-s-t> :vs<bar>:b#<CR>
 noremap <F8> :vertical wincmd f<CR>
 
 " open header/cpp files
-noremap ,h :e %:p:s,.h$,.X123X,:s,.cpp$,.h,:s,.X123X$,.cpp,<CR>
+" noremap ,h :e %:p:s,.h$,.X123X,:s,.cpp$,.h,:s,.X123X$,.cpp,<CR>
+function! SwitchSourceHeader()
+  if (expand ("%:e") == "c")
+    let f = system('find ../ -type f -name ' . expand('%:t:r').'.h')
+    execute 'edit '.f
+  else
+    let f = system('find ../ -type f -name ' . expand('%:t:r').'.c')
+    execute 'edit '.f
+  endif
+endfunction
+
+nmap ,h :call SwitchSourceHeader()<CR>
+
 autocmd QuickFixCmdPost [^l]* nested cwindow
 autocmd QuickFixCmdPost    l* nested lwindow
 noremap <F9> :wa <CR> :make -j5 -s -w -C $DEV_ROOT/
@@ -167,28 +201,20 @@ vmap p "_dP
 
 set background=dark
 "colorscheme hybrid_reverse
-
+"colorscheme hybrid_material
 if has("gui_running")
   colorscheme desert
 else
   colorscheme desert-warm-256
 endif
 
-"hi DiffText term=reverse cterm=bold ctermbg=12 gui=bold guifg=White guibg=#a02222
-"hi DiffChange term=reverse cterm=bold ctermbg=12 guifg=White guibg=#173117
-""DiffAdd, DiffChange, DiffDelete
-hi StatusLine guibg=#8c8e91 guifg=#44484f gui=bold
-hi StatusLineNC guibg=#8c8e91 guifg=#44484f gui=bold
-"hi TabLineFill guibg=#8c9e91 guifg=#14181f gui=bold
-"hi TabLineSel guibg=#6c6e61 guifg=#14181f gui=bold
-"hi TabLine guibg=#8c9e91 guifg=#14181f gui=bold
-"hi CursorLine cterm=bold guifg=NONE guibg=#525252
-
 """""""""""""""""""" TAGS""""""""""""""""""""""
-set tags=$DEV_ROOT/linux_toolchain/linux/tags
-set tags+=$DEV_ROOT/runtime/tags
-set tags+=$DEV_ROOT/libraries/rpc-firmwares/tags
+"set tags=$DEV_ROOT/linux_toolchain/linux/tags
+"set tags+=$DEV_ROOT/runtime/tags
+"set tags+=$DEV_ROOT/libraries/rpc-firmwares/tags
 
+" recurse up to tags with limit $DEV_ROOT/work
+set tags=./tags;,tags;$DEV_ROOT/work
 
 "function! GoToTag(tagWord)
 "	let l:tagfile = &tags
@@ -238,6 +264,7 @@ let g:UltiSnipsJumpBackwardTrigger="<c-tab>"
 " http://vim.wikia.com/wiki/Omni_completion
 filetype plugin on
 set omnifunc=syntaxcomplete#Complete
+au BufNewFile,BufRead,BufEnter *.c,*.h,*.cpp,*.hpp set omnifunc=omni#cpp#complete#Main
 " enable global scope search
 let OmniCpp_GlobalScopeSearch = 1
 " show function parameters
@@ -249,27 +276,34 @@ let OmniCpp_MayCompleteDot = 1
 " auto complete after '->'
 let OmniCpp_MayCompleteArrow = 1
 " auto complete after '::'
-let OmniCpp_MayCompleteScope = 0
+let OmniCpp_MayCompleteScope = 1
 " select first item in pop-up menu
 let OmniCpp_SelectFirstItem = 1
 let OmniCpp_NamespaceSearch = 1
 let OmniCpp_DisplayMode         = 1
 let OmniCpp_ShowScopeInAbbr     = 0 "do not show namespace in pop-up
 let OmniCpp_DefaultNamespaces = ["std", "_GLIBCXX_STD"]
-set completeopt=menuone,menu,longest
+set completeopt=menuone,menu
 set complete-=i "remove include file search
+set pumheight=20
 inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
 """""""""""""""""""" SUPERTAB""""""""""""""""""""""
 " SuperTab option for context aware completion
 " SuperTab completion fall-back 
 "let g:SuperTabDefaultCompletionType='<c-x><c-u><c-p>'
+let g:SuperTabLongestHighlight = 1  "preselect first entry
 let g:SuperTabDefaultCompletionType = "context"
-"let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
+"au BufNewFile,BufRead,BufEnter *.c,*.h,*.cpp,*.hpp let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
+
 "let g:SuperTabContextTextOmniPrecedence = ['&omnifunc', '&completefunc']
 
 "let g:SuperTabCompletionContexts = ['s:ContextText', 's:ContextDiscover']
 "let g:SuperTabContextDiscoverDiscovery = ["&omnifunc:<c-x><c-u>", "&omnifunc:<c-x><c-o>"]
+
+""""""""""""""""" Jedi completion"""""""""""""""""""
+"let g:jedi#auto_initialization = 1
+"let g:jedi#auto_vim_configuration = 1
 
 """""""""""""""""""" YCM""""""""""""""""""""""
 "let g:ycm_min_num_of_chars_for_completion = 2
@@ -322,19 +356,33 @@ autocmd FilterWritePre * if &diff | setlocal wrap< | endif
 """"""""""""""""""""" TAB"""""""""""""""""""""
 let g:buftabline_indicators=1
 let g:buftabline_numbers=0
-let g:buftabline_show=1
+let g:buftabline_show=2
 
 let g:BufTabLineCurrent="TabLineSel"  "current window
 let g:BufTabLineActive="TabLine" "other window
 
 """"""""""""""""""""" Powerline"""""""""""""""""""""
-set rtp+=$HOME/softs/powerline/powerline/bindings/vim/
-set laststatus=2
-set t_Co=256
+"set rtp+=$HOME/softs/powerline/powerline/bindings/vim/
+"set laststatus=2
+"set t_Co=256
+"
+"let g:Powerline_symbols = 'fancy'
+"set fillchars+=stl:\ ,stlnc:\
 
-let g:Powerline_symbols = 'fancy'
+""""""""""""""""""""" Airline"""""""""""""""""""""
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_powerline_fonts = 1
+if !exists('g:airline_symbols')
+	let g:airline_symbols = {}
+endif
+let g:airline_symbols.crypt = '🔒'
+let g:airline_symbols.whitespace = 'Ξ'
+let g:airline_symbols.linenr = '¶'
+set laststatus=2
 set encoding=utf-8
-set fillchars+=stl:\ ,stlnc:\
+
+let g:airline_theme='solarized'
+let g:airline_solarized_dark_text = 1
 
 """"""""""""""""""""" Ack"""""""""""""""""""""""""
 " prefix with s: for local script-only functions / a: prefix for arguments
@@ -360,14 +408,14 @@ let g:ctrlp_by_filename = 1
 let g:ctrlp_max_files = 600
 let g:ctrlp_max_depth = 20
 let g:ctrlp_use_caching = 1
-let g:ctrlp_clear_cache_on_exit = 1
+let g:ctrlp_clear_cache_on_exit = 0
 let g:ctrlp_cache_dir = $HOME . '/.cache/ctrlp'
 "let g:ctrlp_lazy_update = 50
 let g:ctrlp_switch_buffer = 'E'
 let g:ctrlp_regexp = 0
 let g:ctrlp_mruf_relative = 1
-let g:ctrlp_types = ['mixed', 'tag']
-let g:ctrlp_extensions = ['mixed', 'tags']
+let g:ctrlp_types = ['mru', 'tag', 'fil', 'buf']
+let g:ctrlp_extensions = ['mixed', 'tag']
 
 if executable('ag')
   let g:ackprg = 'ag --vimgrep'
@@ -416,25 +464,19 @@ let g:ctrlp_custom_ignore = {
 "let g:syntastic_check_on_wq = 0
 let g:syntastic_c_checkers=['make','splint']
 
-""""""""""""""""" Python"""""""""""""""""
-"let g:pymode_python = 'python3'
-"autocmd filetype python set expandtab
 
 """"""""""""""""" NerdTree"""""""""""""""""
 "nnoremap <C-n> :NERDTree $DEV_ROOT<CR>
 "nnoremap <C-h> :NERDTreeToggle $DEV_ROOT<CR>
 "let g:NERDTreeChDirMode = 2
 nnoremap <C-h> :TagbarToggle <CR>
-nnoremap <C-n> :NERDTreeToggle %:p:h <CR>
+nnoremap <C-e> :NERDTreeToggle %:p:h <CR>
 " auto chdir
-" autocmd BufEnter * silent! lcd %:p:h    break fugitive
 let g:NERDTreeMouseMode=3
 let g:NERDTreeChDirMode=2
 let g:NERDTreeWinSize=35
 let g:NERDTreeWinPos="left"
-
-""""""""""""""""" FSExplorer"""""""""""""""""
-map <C-e> :Explore %:p:h<CR>
+let NERDTreeDirArrows = 1
 
 """"""""""""""""" DoxyToolkit""""""""""""""""
 let g:DoxygenToolkit_compactDoc = "yes"
@@ -447,5 +489,8 @@ set sessionoptions+=unix,slash,tabpages,winsize
 noremap ss :mksession! ~/.vim/sessions/
 noremap rs :so ~/.vim/sessions/
 
-set gfn=Monospace\ Regular\ 8
+"set gfn=Monospace\ 8
+
+set guifont=Bitstream\ Vera\ Sans\ Mono\ 8
+
 syntax enable
