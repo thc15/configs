@@ -27,6 +27,8 @@ Plug 'tsiemens/vim-aftercolors'
 
 Plug 'https://github.com/vim-scripts/perl-support.vim.git'
 Plug 'https://github.com/vim-scripts/ctags.vim.git'
+Plug 'https://github.com/majutsushi/tagbar.git'
+Plug 'https://github.com/craigemery/vim-autotag.git'
 "Plug 'https://github.com/chazy/cscope_maps.git'
 Plug 'https://github.com/scrooloose/nerdtree.git'
 "Plug 'https://github.com/scrooloose/nerdcommenter.git'
@@ -35,7 +37,6 @@ Plug 'https://github.com/vim-scripts/cpp.vim.git'
 Plug 'https://github.com/vim-scripts/python.vim.git'
 Plug 'https://github.com/tpope/vim-fugitive.git'
 Plug 'https://github.com/jreybert/vimagit.git'
-Plug 'https://github.com/majutsushi/tagbar.git'
 Plug 'https://github.com/kien/ctrlp.vim.git'
 Plug 'jacquesbh/vim-showmarks'
 "" Snippets
@@ -56,7 +57,7 @@ Plug 'https://github.com/vim-ruby/vim-ruby.git'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'https://github.com/vim-scripts/OmniCppComplete.git'
-
+Plug 'vim-scripts/Align'
 
 call plug#end()
 
@@ -151,7 +152,6 @@ autocmd! * *.log
 autocmd! * *.txt
 autocmd! * *.gold
 autocmd BufEnter * silent! nested :DoShowMarks!
-
 autocmd BufEnter * silent! nested lcd %:p:h  "  break fugitive
 
 """"""""""""""""" Python"""""""""""""""""
@@ -214,7 +214,7 @@ endif
 "set tags+=$DEV_ROOT/libraries/rpc-firmwares/tags
 
 " recurse up to tags with limit $DEV_ROOT/work
-set tags=./tags;,tags;$DEV_ROOT/work
+set tags=./.tags;,.tags;$DEV_ROOT/work
 
 "function! GoToTag(tagWord)
 "	let l:tagfile = &tags
@@ -237,6 +237,10 @@ set tags=./tags;,tags;$DEV_ROOT/work
 "map <C-f> "zyiw:exe "call GoToTag(@z)"<CR>
 "map <C-g> "zyiw:exe "call Callers(@z)"<CR>
 "map <C-d> "zyiw:exe "call Called(@z)"<CR>
+
+"""""""""""""""""""" AUTOTAGS"""""""""""""""""""""
+let g:autotagTagsFile=".tags"
+let g:autotagStopAt="$DEV_ROOT/work"
 
 """""""""""""""""""" CSCOPE""""""""""""""""""""""
 "set cscopequickfix=s-,c-,d-,i-,t-,e-
@@ -324,7 +328,7 @@ let g:SuperTabDefaultCompletionType = "context"
 set splitbelow
 set splitright
 nnoremap sb :sbNext <CR>
-nnoremap vb <ESC> :vert belowright sbNext<CR> :wincmd =<CR>
+nnoremap vb <ESC> :vert belowright sbNext<CR> :set columns=210 <CR> :cclose <CR> :wincmd =<CR>
 nnoremap ve :Vexplore<CR>
 nnoremap se :Sexplore<CR>
 nnoremap + :50winc +<CR>
@@ -470,7 +474,9 @@ let g:syntastic_c_checkers=['make','splint']
 "nnoremap <C-h> :NERDTreeToggle $DEV_ROOT<CR>
 "let g:NERDTreeChDirMode = 2
 nnoremap <C-h> :TagbarToggle <CR>
-nnoremap <C-e> :NERDTreeToggle %:p:h <CR>
+nnoremap <C-e> :chdir %:p:h <CR> :NERDTreeCWD <CR>
+nnoremap <C-z> :NERDTreeToggle <CR>
+
 " auto chdir
 let g:NERDTreeMouseMode=3
 let g:NERDTreeChDirMode=2
