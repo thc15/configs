@@ -21,14 +21,19 @@ call plug#begin('~/.vim/plugged')
 " original repos on github
 Plug 'vim-scripts/desert-warm-256'
 Plug 'https://github.com/altercation/solarized'
-Plug 'https://github.com/kristijanhusak/vim-hybrid-material.git'
 Plug 'https://github.com/altercation/vim-colors-solarized.git'
 Plug 'tsiemens/vim-aftercolors'
+Plug 'NLKNguyen/papercolor-theme'
+Plug 'https://github.com/sheerun/vim-wombat-scheme.git'
 
+
+" urxvt + tmux
+Plug 'https://github.com/akracun/vitality.vim.git'
+Plug 'https://github.com/drmikehenry/vim-fixkey.git'
 Plug 'https://github.com/vim-scripts/perl-support.vim.git'
 Plug 'https://github.com/vim-scripts/ctags.vim.git'
-Plug 'https://github.com/majutsushi/tagbar.git'
 Plug 'https://github.com/craigemery/vim-autotag.git'
+Plug 'https://github.com/majutsushi/tagbar.git'
 "Plug 'https://github.com/chazy/cscope_maps.git'
 Plug 'https://github.com/scrooloose/nerdtree.git'
 "Plug 'https://github.com/scrooloose/nerdcommenter.git'
@@ -39,11 +44,12 @@ Plug 'https://github.com/tpope/vim-fugitive.git'
 Plug 'https://github.com/jreybert/vimagit.git'
 Plug 'https://github.com/kien/ctrlp.vim.git'
 Plug 'jacquesbh/vim-showmarks'
+Plug 'https://github.com/AndrewRadev/linediff.vim.git'
+Plug 'https://github.com/machakann/vim-highlightedyank.git'
 "" Snippets
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'https://github.com/ervandew/supertab.git'
-Plug 'https://github.com/scrooloose/syntastic.git'
 Plug 'https://github.com/vim-scripts/BufOnly.vim.git'
 Plug 'https://github.com/vim-scripts/bufferlist.vim.git'
 Plug 'mileszs/ack.vim'
@@ -83,13 +89,12 @@ set switchbuf=usetab
 set cino+=(0    " indent function args
 set expandtab
 set bs=2
-set ts=4
-set shiftwidth=4
+set ts=8
+set shiftwidth=0
 set number
 set list
 set listchars=tab:>-,trail:.,extends:>
-set columns=200
-set cursorline
+"set columns=200
 set autoread
 set autowrite
 set wildmenu
@@ -97,8 +102,10 @@ set wildmenu
 set wildmode=list:full
 set ruler
 set wrap
+set cursorline
 "set iskeyword-=:
 set colorcolumn=80
+"set undofile
 
 set clipboard=unnamed
 set clipboard+=unnamedplus
@@ -154,11 +161,12 @@ autocmd! * *.gold
 autocmd BufEnter * silent! nested :DoShowMarks!
 autocmd BufEnter * silent! nested lcd %:p:h  "  break fugitive
 
-""""""""""""""""" Python"""""""""""""""""
-"let g:pymode_python = 'python3'
-autocmd BufRead,BufNewFile *.py set expandtab
+autocmd BufRead,BufNewFile *.py,*pyw set shiftwidth=4
+autocmd BufRead,BufNewFile *.py,*.pyw set expandtab
 autocmd BufRead,BufNewFile *.rb set expandtab
 autocmd BufRead,BufNewFile *.[ch] set noexpandtab
+autocmd BufRead,BufNewFile *.yaml set noexpandtab
+autocmd BufRead,BufNewFile *.dtsi set noexpandtab
 
 map <F1> :tn <CR>
 
@@ -171,6 +179,7 @@ nnoremap <C-o> :BufOnly <CR>
 noremap <F4> :bp<CR>:bd # <CR>
 noremap <C-s-t> :vs<bar>:b#<CR>
 noremap <F8> :vertical wincmd f<CR>
+noremap <F6> :browse oldfiles!<CR>
 
 " open header/cpp files
 " noremap ,h :e %:p:s,.h$,.X123X,:s,.cpp$,.h,:s,.X123X$,.cpp,<CR>
@@ -184,7 +193,7 @@ function! SwitchSourceHeader()
   endif
 endfunction
 
-nmap ,h :call SwitchSourceHeader()<CR>
+nmap <leader>h :call SwitchSourceHeader()<CR>
 
 autocmd QuickFixCmdPost [^l]* nested cwindow
 autocmd QuickFixCmdPost    l* nested lwindow
@@ -197,16 +206,57 @@ vmap cu :s/\v^(\/\/\|#)//<CR>
 " Use blackhole register to paste (keeps yanked text)
 vmap p "_dP
 
-""""""""""""""""""""COLORS""""""""""""""""""""""
 
-set background=dark
+""""""""""""""""""""COLORS""""""""""""""""""""""
+"set gfn=Monospace\ 8
+set guifont=Bitstream\ Vera\ Sans\ Mono\ 8
+
+syntax enable
+set enc=utf-8
+
+if &term =~ '256color'
+  " disable Background Color Erase (BCE) so that color schemes
+  " render properly when inside 256-color tmux and GNU screen.
+  " see also http://snk.tuxfamily.org/log/vim-256color-bce.html
+  set t_ut=
+  set t_Co=256
+endif
+
 "colorscheme hybrid_reverse
 "colorscheme hybrid_material
 if has("gui_running")
+  set background=dark
   colorscheme desert
 else
+  set term=screen-256color
+  let $TERM='screen-256color'
   colorscheme desert-warm-256
+  set background=dark
+  let g:vitality_tmux_can_focus = 1
+  colorscheme PaperColor
+  let g:PaperColor_Theme_Options = {
+    \   'theme': {
+    \     'default': {
+    \       'allow_bold': 1,
+    \     }
+    \   }
+    \ }
+  if &term =~ '^screen'
+    " tmux will send xterm-style keys when its xterm-keys option is on
+    execute "set <xHome>=\e[1;*H"
+    execute "set <Home>=\e[1;*H"
+    execute "set <xUp>=\e[1;*A"
+    execute "set <xDown>=\e[1;*B"
+    execute "set <xRight>=\e[1;*C"
+    execute "set <xLeft>=\e[1;*D"
+  endif
 endif
+
+" On colorscheme change force reset of cursorline
+augroup CustomCursorLine
+au!
+au ColorScheme * :hi! CursorLine  ctermbg=253
+augroup END
 
 """""""""""""""""""" TAGS""""""""""""""""""""""
 "set tags=$DEV_ROOT/linux_toolchain/linux/tags
@@ -214,29 +264,9 @@ endif
 "set tags+=$DEV_ROOT/libraries/rpc-firmwares/tags
 
 " recurse up to tags with limit $DEV_ROOT/work
-set tags=./.tags;,.tags;$DEV_ROOT/work
-
-"function! GoToTag(tagWord)
-"	let l:tagfile = &tags
-"	execute 'set tags=' . l:tagfile
-"	execute 'tjump ' . a:tagWord
-"endfunction
-"
-"function! Callers(tagWord)
-"	let l:tagfile = &tags
-"	execute 'set tags=' . l:tagfile
-"	execute 'cs find c ' . a:tagWord
-"endfunction
-"
-"function! Called(tagWord)
-"	let l:tagfile = &tags
-"	execute 'set tags=' . l:tagfile
-"	execute 'cs find d ' . a:tagWord
-"endfunction
-"
-"map <C-f> "zyiw:exe "call GoToTag(@z)"<CR>
-"map <C-g> "zyiw:exe "call Callers(@z)"<CR>
-"map <C-d> "zyiw:exe "call Called(@z)"<CR>
+set tags=./.tags;,.tags;,tags;$DEV_ROOT/work
+nnoremap <leader>t :tag <c-r><c-w><cr>
+"C-t to go back
 
 """""""""""""""""""" AUTOTAGS"""""""""""""""""""""
 let g:autotagTagsFile=".tags"
@@ -282,7 +312,7 @@ let OmniCpp_MayCompleteArrow = 1
 " auto complete after '::'
 let OmniCpp_MayCompleteScope = 1
 " select first item in pop-up menu
-let OmniCpp_SelectFirstItem = 1
+let OmniCpp_SelectFirstItem = 0
 let OmniCpp_NamespaceSearch = 1
 let OmniCpp_DisplayMode         = 1
 let OmniCpp_ShowScopeInAbbr     = 0 "do not show namespace in pop-up
@@ -340,10 +370,11 @@ autocmd VimResized * exe "normal \<c-w>="
 nnoremap n nzzzv
 nnoremap N Nzzzv
 
+
 """"""""""""""""""" DIFF"""""""""""""""""""""""
 nnoremap <C-PageDown> ]c
 nnoremap <C-PageUp> [c
-nnoremap ,g :%diffget<CR>
+nnoremap <leader>g :%diffget<CR>
 
 "let g:DiffUnit="Word1"
 "let g:DiffColors=323
@@ -356,6 +387,9 @@ if &diff                             " only for diff mode/vimdiff
   set nocursorline
 endif
 autocmd FilterWritePre * if &diff | setlocal wrap< | endif
+
+let g:linediff_first_buffer_command  = 'new'
+let g:linediff_further_buffer_command = 'vertical new'
 
 """"""""""""""""""""" TAB"""""""""""""""""""""
 let g:buftabline_indicators=1
@@ -385,8 +419,13 @@ let g:airline_symbols.linenr = '¶'
 set laststatus=2
 set encoding=utf-8
 
-let g:airline_theme='solarized'
-let g:airline_solarized_dark_text = 1
+let g:airline_theme='papercolor'
+let g:airline_theme='dark'
+"let g:airline_solarized_dark_text = 1
+"let g:airline_solarized_normal_green = 1
+"let g:airline_solarized_dark_inactive_border = 1
+"let g:solarized_base16 = 1
+"let g:airline_base16_improved_contrast = 1
 
 """"""""""""""""""""" Ack"""""""""""""""""""""""""
 " prefix with s: for local script-only functions / a: prefix for arguments
@@ -495,8 +534,6 @@ set sessionoptions+=unix,slash,tabpages,winsize
 noremap ss :mksession! ~/.vim/sessions/
 noremap rs :so ~/.vim/sessions/
 
-"set gfn=Monospace\ 8
 
-set guifont=Bitstream\ Vera\ Sans\ Mono\ 8
 
 syntax enable
