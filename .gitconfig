@@ -1,7 +1,7 @@
 [user]
-        sshid = thomas
+        sshid = thc15
         name = Thomas Costis
-        email = thomas@defactotech.com
+        email = thcostis@gmail.com
 
 [init]
 #      templatedir = ~/.git_template
@@ -34,7 +34,7 @@
 [core]
         whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol
         editor = vim
-        excludesfile = /local_home/thomas/.gitignore_global
+        excludesfile = ~/.gitignore_global
 
 [grep]
         linenumber = true
