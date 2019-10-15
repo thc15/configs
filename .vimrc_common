@@ -5,10 +5,10 @@ filetype off                  " required!
 let g:mapleader=","
 
 "set rtp+=~/.vim/bundle/vundle
-let $VIM=$HOME . "/bin/vim"
-let $VIMRUNTIME=$HOME . "/softs/vim/runtime"
-set runtimepath^=$VIMRUNTIME
-set helpfile=$VIMRUNTIME/doc/help.txt
+"let $VIM=$HOME . "/.local/bin/vim"
+"let $VIMRUNTIME=$HOME . "/softs/vim/runtime"
+"set runtimepath^=$VIMRUNTIME
+"set helpfile=$VIMRUNTIME/doc/help.txt
 
 "call vundle#rc()
 " - Avoid using standard Vim directory names like 'plugin'
@@ -21,6 +21,7 @@ call plug#begin('~/.vim/plugged')
 "" original repos on github
 "Plug 'vim-scripts/desert-warm-256'
 "Plug 'https://github.com/altercation/solarized'
+"Plug 'https://github.com/vim-scripts/AfterColors.vim.git'
 Plug 'https://github.com/NLKNguyen/papercolor-theme.git'
 
 "" urxvt + tmux
@@ -42,9 +43,10 @@ Plug 'https://github.com/kien/ctrlp.vim.git'
 Plug 'jacquesbh/vim-showmarks'
 Plug 'https://github.com/AndrewRadev/linediff.vim.git'
 Plug 'https://github.com/machakann/vim-highlightedyank.git'
+Plug 'https://github.com/tpope/vim-obsession.git'
 """ Snippets
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
+"Plug 'SirVer/ultisnips'
+"Plug 'honza/vim-snippets'
 Plug 'https://github.com/ervandew/supertab.git'
 "Plug 'https://github.com/vim-scripts/BufOnly.vim.git'
 ""Plug 'https://github.com/vim-scripts/bufferlist.vim.git'
@@ -53,11 +55,6 @@ Plug 'mileszs/ack.vim'
 ""Plug 'https://github.com/Valloric/YouCompleteMe.git'
 Plug 'https://github.com/bogado/file-line.git'
 Plug 'https://github.com/vim-scripts/DoxygenToolkit.vim.git'
-"
-Plug 'https://github.com/vim-ruby/vim-ruby.git'
-""Plug 'https://github.com/davidhalter/jedi-vim.git'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
 Plug 'https://github.com/vim-scripts/OmniCppComplete.git'
 Plug 'vim-scripts/Align'
 Plug 'https://github.com/vim-scripts/mru.vim.git'
@@ -71,7 +68,7 @@ set incsearch
 "set smartcase   " do not use -> * fails to search with class delimiter ::
 set ignorecase
 set vb t_vb=
-"set autochdir
+set autochdir
 set nobackup
 set nowritebackup
 set noswapfile
@@ -99,19 +96,25 @@ set ruler
 set wrap
 set cursorline
 "set iskeyword-=:
-set columns=330
+"set columns=330
 set colorcolumn=80
 "set undofile
+set re=1
+set timeoutlen=0
+set laststatus=2
+set encoding=utf-8
 
 set clipboard=unnamed
 set clipboard+=unnamedplus
 
-set paste
 set go+=a
 
 " Disable bracketed mode
 set t_BE=
 
+profile start profile.log
+"profile func *
+"profile file *
 """""""""""""""""""""MAPPING""""""""""""""""""""""
 "
 noremap <C-Left> :bp <CR>
@@ -216,6 +219,8 @@ autocmd FilterWritePre * if &diff | setlocal wrap< | endif
 let g:linediff_first_buffer_command  = 'new'
 let g:linediff_further_buffer_command = 'vertical new'
 
+let g:fugitive_git_executable = $HOME . "/.local/bin/git"
+
 """"""""""""""""""""" TAB"""""""""""""""""""""
 let g:buftabline_indicators=1
 let g:buftabline_numbers=0
@@ -225,31 +230,13 @@ let g:BufTabLineCurrent="TabLineSel"  "current window
 let g:BufTabLineActive="TabLine" "other window
 
 """"""""""""""""""""" Powerline"""""""""""""""""""""
-""set rtp+=$HOME/softs/powerline/powerline/bindings/vim/
-""set laststatus=2
-""set t_Co=256
-""
-""let g:Powerline_symbols = 'fancy'
-""set fillchars+=stl:\ ,stlnc:\
-"
-""""""""""""""""""""" Airline"""""""""""""""""""""
-let g:airline#extensions#tabline#enabled = 1
-let g:airline_powerline_fonts = 1
-if !exists('g:airline_symbols')
-	let g:airline_symbols = {}
-endif
-let g:airline_symbols.crypt = '🔒'
-let g:airline_symbols.whitespace = 'Ξ'
-let g:airline_symbols.linenr = '¶'
+"set rtp+=$HOME/.local/lib/python2.7/site-packages/powerline/bindings/vim/
+set rtp+=$HOME/.local/lib/python3.6/site-packages/powerline_status-2.7-py3.6.egg/powerline/bindings/vim/
 set laststatus=2
-set encoding=utf-8
+set t_Co=256
 
-let g:airline_theme='dark'
-"let g:airline_solarized_dark_text = 1
-"let g:airline_solarized_normal_green = 1
-"let g:airline_solarized_dark_inactive_border = 1
-"let g:solarized_base16 = 1
-"let g:airline_base16_improved_contrast = 1
+let g:Powerline_symbols = 'fancy'
+set fillchars+=stl:\ ,stlnc:\
 
 """"""""""""""""""""" Ack"""""""""""""""""""""""""
 " prefix with s: for local script-only functions / a: prefix for arguments
@@ -300,6 +287,9 @@ let g:ctrlp_custom_ignore = {
   \ 'dir':  '\v[\/]\.(git|hg|svn)|debug|obj|linux_x86$',
   \ 'file': '\v\.(exe|so|dll|bin|o|v|d|a|gold)$',
   \ }
+
+
+"set statusline+=%{ObsessionStatus()}
 
 """""""""""""""""" ConqueGDB"""""""""""""""""
 "let dev_root="$DEV_ROOT"
@@ -409,6 +399,8 @@ inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 "let g:SuperTabDefaultCompletionType='<c-x><c-u><c-p>'
 let g:SuperTabLongestHighlight = 1  "preselect first entry
 let g:SuperTabDefaultCompletionType = "context"
+"set paste Do not set paste option
+"let g:SuperTabDefaultCompletionType = "<c-n>"
 "au BufNewFile,BufRead,BufEnter *.c,*.h,*.cpp,*.hpp let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
 
 "let g:SuperTabContextTextOmniPrecedence = ['&omnifunc', '&completefunc']
@@ -445,3 +437,4 @@ noremap rs :so ~/.vim/sessions/
 
 set enc=utf-8
 syntax enable
+
