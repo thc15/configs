@@ -2,7 +2,7 @@
 
 set nocompatible              " be iMproved
 filetype off                  " required!
-let g:mapleader=","
+let g:mapleader = ","
 
 "set rtp+=~/.vim/bundle/vundle
 "let $VIM=$HOME . "/.local/bin/vim"
@@ -30,7 +30,7 @@ Plug 'https://github.com/NLKNguyen/papercolor-theme.git'
 "Plug 'https://github.com/vim-scripts/perl-support.vim.git'
 Plug 'https://github.com/vim-scripts/ctags.vim.git'
 "Plug 'https://github.com/craigemery/vim-autotag.git'
-""Plug 'https://github.com/majutsushi/tagbar.git' " error cant open file
+Plug 'https://github.com/majutsushi/tagbar.git' " error cant open file
 ""Plug 'https://github.com/chazy/cscope_maps.git'
 Plug 'https://github.com/scrooloose/nerdtree.git'
 ""Plug 'https://github.com/scrooloose/nerdcommenter.git'
@@ -58,6 +58,8 @@ Plug 'https://github.com/vim-scripts/DoxygenToolkit.vim.git'
 Plug 'https://github.com/vim-scripts/OmniCppComplete.git'
 Plug 'vim-scripts/Align'
 Plug 'https://github.com/vim-scripts/mru.vim.git'
+Plug 'https://github.com/benmills/vimux.git'
+Plug 'itchyny/lightline.vim'
 
 call plug#end()
 
@@ -111,6 +113,7 @@ set go+=a
 
 " Disable bracketed mode
 set t_BE=
+set mouse=a
 
 profile start profile.log
 "profile func *
@@ -119,7 +122,6 @@ profile start profile.log
 "
 noremap <C-Left> :bp <CR>
 noremap <C-Right> :bn <CR>
-
 
 " Ignore these directories
 set wildignore+=*/tmp/*
@@ -221,6 +223,11 @@ let g:linediff_further_buffer_command = 'vertical new'
 
 let g:fugitive_git_executable = $HOME . "/.local/bin/git"
 
+
+""""""""""""""""""""" VIMUX"""""""""""""""""""""
+nnoremap <C-c> :VimuxPromptCommand<CR>
+nnoremap <C-p> :VimuxRunLastCommand<CR>
+
 """"""""""""""""""""" TAB"""""""""""""""""""""
 let g:buftabline_indicators=1
 let g:buftabline_numbers=0
@@ -229,14 +236,6 @@ let g:buftabline_show=2
 let g:BufTabLineCurrent="TabLineSel"  "current window
 let g:BufTabLineActive="TabLine" "other window
 
-""""""""""""""""""""" Powerline"""""""""""""""""""""
-"set rtp+=$HOME/.local/lib/python2.7/site-packages/powerline/bindings/vim/
-set rtp+=$HOME/.local/lib/python3.6/site-packages/powerline_status-2.7-py3.6.egg/powerline/bindings/vim/
-set laststatus=2
-set t_Co=256
-
-let g:Powerline_symbols = 'fancy'
-set fillchars+=stl:\ ,stlnc:\
 
 """"""""""""""""""""" Ack"""""""""""""""""""""""""
 " prefix with s: for local script-only functions / a: prefix for arguments
@@ -245,8 +244,8 @@ function! s:search(pattern)
   :execute 'Ack --cpp '. a:pattern.' $DEV_ROOT'
 endfunction
 
-"map <F3> :execute "noautocmd vimgrep /" .expand("<cword>") . "/j ../*/*.[ch]" <Bar> cw<CR>
-map <F3> :execute "noautocmd Ggrep " .expand("<cword>") <Bar> cw<CR><CR>
+map <F3> :execute "noautocmd vimgrep /" .expand("<cword>") . "/j **/*.[ch]" <Bar> cw<CR>
+"map <F3> :execute "noautocmd Ggrep " .expand("<cword>") <Bar> cw<CR><CR>
 command! -nargs=1 Search call s:search(<f-args>) | lwindow
 
 """"""""""""""""""""" CtrlP"""""""""""""""""""""""
@@ -288,8 +287,18 @@ let g:ctrlp_custom_ignore = {
   \ 'file': '\v\.(exe|so|dll|bin|o|v|d|a|gold)$',
   \ }
 
-
-"set statusline+=%{ObsessionStatus()}
+let g:lightline = {
+      \ 'colorscheme': 'wombat',
+      \ 'enable': { 'tabline': 1 },
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+      \ },
+      \ 'component_function': {
+      \   'gitbranch': 'fugitive#head'
+      \ },
+    \ }
+set fillchars+=stl:\ ,stlnc:\
 
 """""""""""""""""" ConqueGDB"""""""""""""""""
 "let dev_root="$DEV_ROOT"
@@ -321,7 +330,7 @@ let g:syntastic_c_checkers=['make','splint']
 "nnoremap <C-n> :NERDTree $DEV_ROOT<CR>
 "nnoremap <C-h> :NERDTreeToggle $DEV_ROOT<CR>
 "let g:NERDTreeChDirMode = 2
-nnoremap <C-h> :TagbarToggle <CR>
+nnoremap <C-t> :TagbarToggle <CR>
 nnoremap <C-e> :chdir %:p:h <CR> :NERDTreeCWD <CR>
 nnoremap <C-d> :NERDTreeToggle <CR>
 
@@ -335,7 +344,7 @@ let NERDTreeQuitOnOpen = 3
 
 """""""""""""""""""" TAGS""""""""""""""""""""""
 " recurse up to tags with limit $DEV_ROOT
-set tags=./.tags;,.tags;,tags;$DEV_ROOT
+set tags=./tags;,tags;,.tags;$DEV_ROOT
 nnoremap <leader>t :tag <c-r><c-w><cr>
 "C-t to go back
 
@@ -411,18 +420,16 @@ let g:SuperTabDefaultCompletionType = "context"
 """"""""""""""""""""" SPLITS"""""""""""""""""""""""
 set splitbelow
 set splitright
-nnoremap sb :sbNext <CR>
-nnoremap vb <ESC> :vert belowright sbNext<CR> :cclose <CR> :wincmd =<CR>
-nnoremap ve :Vexplore<CR>
-nnoremap se :Sexplore<CR>
-nnoremap + :50winc +<CR>
-nnoremap - :30winc -<CR>
+"noremap sb :sbNext <CR>
+nnoremap <F2> <ESC> :vert belowright sbNext<CR> :cclose <CR> :wincmd =<CR>
+"nnoremap + :50winc +<CR>
+"nnoremap - :30winc -<CR>
 
 autocmd VimResized * exe "normal \<c-w>="
 
 " Keep search matches in the middle of the window.
-nnoremap n nzzzv
-nnoremap N Nzzzv
+"nnoremap n nzzzv
+"nnoremap N Nzzzv
 
 """"""""""""""""" DoxyToolkit""""""""""""""""
 let g:DoxygenToolkit_compactDoc = "yes"

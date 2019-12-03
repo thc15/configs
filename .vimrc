@@ -8,6 +8,7 @@ if &term =~ '256color'
   set t_ut=
   set t_Co=256
 endif
+set ttymouse=sgr
 
 ""colorscheme hybrid_reverse
 ""colorscheme hybrid_material
@@ -23,16 +24,16 @@ endif
     \     }
     \   }
     \ }
-  if &term =~ '^screen'
-    " tmux will send xterm-style keys when its xterm-keys option is on
-    execute "set <xHome>=\e[1;*H"
-    execute "set <Home>=\e[1;*H"
-    execute "set <xUp>=\e[1;*A"
-    execute "set <xDown>=\e[1;*B"
-    execute "set <xRight>=\e[1;*C"
-    execute "set <xLeft>=\e[1;*D"
-  endif
+"  if &term =~ '^screen'
+"    " tmux will send xterm-style keys when its xterm-keys option is on
+"    execute "set <xHome>=\e[1;*H"
+"    execute "set <Home>=\e[1;*H"
+"  endif
 
+execute "set <xUp>=\e[1;*A"
+execute "set <xDown>=\e[1;*B"
+execute "set <xRight>=\e[1;*C"
+execute "set <xLeft>=\e[1;*D"
 "colorscheme desert
 " On colorscheme change force reset of cursorline
 augroup CustomCursorLine
