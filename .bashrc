@@ -1,36 +1,43 @@
-# .bashrc
+# ~/.bashrc: executed by bash(1) for non-login shells.
+# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
+# for examples
 
-# Source global definitions
-if [ -f /etc/bashrc ]; then
-	. /etc/bashrc
-fi
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
 
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
-HISTCONTROL=ignoredups:erasedups
-HISTIGNORE=ls:ll:la:l:pwd:exit:mc:su:df:clear
+HISTCONTROL=ignoreboth
 
-# When the shell exits, append to the history file instead of overwriting it
+# append to the history file, don't overwrite it
 shopt -s histappend
-shopt -s dirspell
-PROMPT_COMMAND='history -a'
 
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
 HISTSIZE=1000
 HISTFILESIZE=2000
-export EDITOR=vim
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
 
+# If set, the pattern "**" used in a pathname expansion context will
+# match all files and zero or more directories and subdirectories.
+#shopt -s globstar
 
-# Disable empty completions
-#shopt -s no_empty_cmd_completion
+# make less more friendly for non-text input files, see lesspipe(1)
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+# set variable identifying the chroot you work in (used in the prompt below)
+if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+fi
 
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
-    xterm-color) color_prompt=yes;;
+    xterm-color|*-256color) color_prompt=yes;;
 esac
 
 # uncomment for a colored prompt, if the terminal has the capability; turned
@@ -65,67 +72,29 @@ xterm*|rxvt*)
     ;;
 esac
 
+# colored GCC warnings and errors
+#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
-###########################################
-#export STAR_VER="6.0.01"
-#export STAR_EXE="/home/build/Distributions/HiDFT_STAR_${STAR_VER}_BUILDS/HiDFT-STAR"
+# Add an "alert" alias for long running commands.  Use like so:
+#   sleep 10; alert
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
-function init_env {
-  if [ $1 == "" ]; then
-    echo "Please set arg for DEV_ROOT"
-    exit
-  fi
-  export DEV_ROOT="$1"
-  export DFT_BUILD_ROOT="$DEV_ROOT/defacto/src"
-  export HIDFT_HOME="$DEV_ROOT/dist"
-  export STAR_EXE="$DEV_ROOT/defacto/src/libstar/obj/test/debug64/star_debug64.exe"
-  export TCLAPI_EXE="$DEV_ROOT/defacto/src/libtclapi/obj/test/debug64/tclapi_exec_debug64.exe"
-  source $DEV_ROOT/build/source_me.sh
-}
+# Alias definitions.
+# You may want to put all your additions into a separate file like
+# ~/.bash_aliases, instead of adding them here directly.
+# See /usr/share/doc/bash-doc/examples in the bash-doc package.
 
-function so_tag {
-  tag="ML"
-  if [ "$1" != "" ]; then
-    tag="$1"
-  fi
-  echo "Setting env for $tag"
-#  tmp_dir="$HOME/tmp/svn_automerge"
-  root_dir="$HOME/work/sandbox"
-#  if [ -d $tmp_dir/$tag ]; then
-#    root_dir="$tmp_dir"
-#  fi
-  init_env "$root_dir/$tag"
-}
-
-function so_tag_pwd {
-  echo "Setting env with DEV_ROOT=$PWD"
-  init_env $PWD
-}
-
-so_tag
-
-if [ -f ~/.bash_ext ]; then
-  . ~/.bash_ext
-fi
-
-export PATH=$HOME/soft/local/bin:$PATH
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/soft/local/lib64
-#:$HOME/soft/local/lib readline ???
-
-###########################################
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
 
-export PS1='\[\e]2;\w\a\033[00;33m\]\t \[\033[00;32m\]\u\[\033[00m\]@\[\033[00;32m\]\h\[\033[00m\]: \[\033[00;35m\]\w\[\033[00m\](\[\033[00;36m\]`git branch 2>/dev/null|cut -f2 -d\* -s | sed -e "s/ //"`\[\033[00m\])\n$'
-
-# disable bracketted mode.
-printf "\e[?2004l"
-
-echo "$BASH_POST_RC" ; eval "$BASH_POST_RC"
-
-
-
-
-
-
+# enable programmable completion features (you don't need to enable
+# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
+# sources /etc/bash.bashrc).
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi
