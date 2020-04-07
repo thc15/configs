@@ -17,18 +17,16 @@ alias ka='\killall -s 9 '
 alias ll='ls -al'
 alias l='ls -al'
 alias win='rdesktop -x 0x80 winapp -k fr -d kalray -g 1400x960'
-#alias python='python36'
-
 
 function ssht () {
-	/usr/bin/ssh -X -t $@ "$HOME/bin/tmux attach || $HOME/bin/tmux new";
+	/usr/bin/ssh -X -t $@ "/nfs/$HOME/.local/bin/tmux attach || /nfs/$HOME/.local/bin/tmux new";
 }
 
 function color-ssh() {
 	#trap "$HOME/utils/colorterm.sh" INT EXIT
-	$HOME/utils/colorterm.sh ssh
+	/nfs/$HOME/utils/colorterm.sh ssh
 	\ssh $*
-	$HOME/utils/colorterm.sh
+	/nfs/$HOME/utils/colorterm.sh
 }
 
 # completion + alias
@@ -38,17 +36,17 @@ alias ssh=color-ssh
 # vim
 # cd ~/.vim/bundle/YouCompleteMe && ./install.py --clang-completer
 alias vl='vim -c "cd `git rev-parse --show-toplevel`" `git whatchanged -n 1 --oneline | sed "1d" | sed -e "s/.*\s//"`'
-#alias vd='gvimdiff -geom 200x70'
-alias vp='gvim -geom 170x70'
-alias vd='vp -d '
-alias vmap='vp $DEV_ROOT/rdtools/machine/build/map/coolidge.cluster.map'
-alias veth='vp $DEV_ROOT/rdtools/machine/build/linux_headers/devices/ethernet_coolidge.h'
+#alias vp='gvim -geom 170x70 -u ~/.gvimrc'
+alias vd='vimdiff -d '
+#alias vmap='vp $DEV_ROOT/rdtools/machine/build/map/coolidge.cluster.map'
+#alias veth='vp $DEV_ROOT/rdtools/machine/build/linux_headers/devices/ethernet_coolidge.h'
 alias v='vim'
+alias vc='vim -p `git diff --name-only --relative | uniq`'
 
 vfd()
 {
 #    gvim `find -P -03 . -type f -name "*$1*"`
-    $HOME/bin/vim -g -geom 170x70 `find -O3 -P . -path ./lib -prune -o -path obj -prune -o -path ./libtest -prune -o -path ./framework/lib -prune -o \
+    vim -g -geom 170x70 `find -O3 -P . -path ./lib -prune -o -path obj -prune -o -path ./libtest -prune -o -path ./framework/lib -prune -o \
      -name '*.o*' -prune -o -name '*.d' -prune -o -type f -iname "*$1*" -print`
 #extension="${filename##*.}"
 }
@@ -57,7 +55,7 @@ vdd()
 {
   file1="$1/$3"
   file2="$2/$3"
-  gvimdiff $file1 $file2
+  vimdiff $file1 $file2
 }
 
 # dev
@@ -65,20 +63,28 @@ alias ag='ag -a '
 alias hg='history | grep -ni '
 alias pg='ps -ef | grep -ni '
 alias tk='tmux kill-session -t '
-alias cdw='cd /work1/$USER/work'
-alias cdr='cd $DEV_ROOT'
-alias cdk='cd $DEV_ROOT/linux_buildroot/images/k1bio_console_legacy_debug/build/linux-custom'
-alias cdn='cdk; cd drivers/net/ethernet/kalray'
-alias cde='cd $DEV_ROOT/linux_toolchain/linux/drivers/net/ethernet/kalray'
-alias cdl='cd $DEV_ROOT/libraries'
-alias cdi='cd $DEV_ROOT/linux_buildroot/images/k1bio_console_legacy_debug/images'
-alias swe='source ./kEnv/k1tools/.switch_env'
-alias k1r='$DEV_ROOT/rdtools/kEnv/k1tools/usr/local/k1rdtools/kalray_internal/machine/bin/k1reg'
-alias td='terminator -b -m -l dev'
-alias ts='terminator -b -m -l ssh -p ssh'
+alias cdw='cd $DEV_ROOT'
+alias cdbc='cd $DEV_ROOT/linux_toolchain_coolidge/workspace/build_buildroot/build_dev_k1c'
+alias cdlc='cd $DEV_ROOT/linux_toolchain_coolidge/linux'
+alias cde='cd $DEV_ROOT/csw/ethernet'
+alias cdt='cd $DEV_ROOT/csw/fdt/device-trees'
+alias cda='cd $DEV_ROOT/csw/aci_hw_sw/tests/mppa/Ethernet'
+alias k1r='$DEV_ROOT/csw/devimage/toolchain_default/toolroot/usr/local/k1rdtools/kalray_internal/machine/bin/k1reg'
 
 alias yi='sudo yum install -y'
 alias ys='sudo yum search'
+
+function ggl {
+   ag -l "$1" | xargs ag "$2"
+}
+
+function nodup {
+  if [ "$1" != "" ]; then
+    P="$1"
+    echo -n $P | awk -v RS=: '!($0 in a) {a[$0]; printf("%s%s", length(a) > 1 ? ":" : "", $0)}'
+  fi
+}
+
 
 function install_rpc_firmware {
 	cd $DEV_ROOT/libraries/rpc-firmwares
@@ -153,11 +159,11 @@ function gws {
     echo "$2 NOT found"
   fi
 }
-alias gb='git branch '
+alias gb='git branch --sort=-committerdate'
 alias gfa='git fetch -a'
 alias grv='git remote -v'
-alias gl='git log --graph --abbrev-commit --pretty=oneline --decorate -n 50'
-alias gdl="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative "  #master..branchX
+alias gl='git log --oneline --format="%C(auto) %h %an / %ar / %s"  -n 30'
+alias gk='gitk -n100'
 
 
 
