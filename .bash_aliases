@@ -35,6 +35,7 @@ alias ssh=color-ssh
 # vim
 alias vl='vim -c "cd `git rev-parse --show-toplevel`" `git whatchanged -n 1 --oneline | sed "1d" | sed -e "s/.*\s//"`'
 alias v='vim'
+alias vd='vimdiff -d '
 
 
 # dev

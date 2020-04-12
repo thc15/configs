@@ -15,4 +15,4 @@ SRC_DIR=$1
 DST_DIR=$2
 
 
-rsync -avuE --inplace --progress $SRC_DIR $DST_DIR
+rsync -atvuE --inplace --progress $SRC_DIR $DST_DIR
