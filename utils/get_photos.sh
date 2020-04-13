@@ -30,4 +30,5 @@ for d in $SRC/DCIM/*; do
         done
 done
 
-$HOME/utils/backup.sh $TOP /mnt/data1/photos
+$HOME/utils/backup.sh $TOP /mnt/data/photos/
+$HOME/utils/backup.sh $TOP /mnt/data1/photos/
