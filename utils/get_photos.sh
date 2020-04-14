@@ -2,7 +2,7 @@
 
 XFER="cp -fpuv"
 TOP="$HOME/Pictures/"
-SRC="/media/thomas/disk/"
+SRC="/media/$USER/disk/"
 
 if [ ! -d $SRC/DCIM ]; then
         exit -1
