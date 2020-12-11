@@ -16,17 +16,20 @@ alias rm='\rm -i '
 alias ka='\killall -s 9 '
 alias ll='ls -al'
 alias l='ls -al'
+alias duse='du -sh -- * | sort -h'
 alias win='rdesktop -x 0x80 winapp -k fr -d kalray -g 1400x960'
+alias slack='/snap/slack/current/usr/bin/slack'
+alias zoom='/snap/zoom-client/current/zoom/zoom.sh'
 
 function ssht () {
-	/usr/bin/ssh -X -t $@ "/nfs/$HOME/.local/bin/tmux attach || /nfs/$HOME/.local/bin/tmux new";
+	/usr/bin/ssh -X -t $@ "tmux attach-session -t default || tmux new";
 }
 
 function color-ssh() {
 	#trap "$HOME/utils/colorterm.sh" INT EXIT
-	/nfs/$HOME/utils/colorterm.sh ssh
+	$HOME/utils/colorterm.sh ssh
 	\ssh $*
-	/nfs/$HOME/utils/colorterm.sh
+	$HOME/utils/colorterm.sh
 }
 
 # completion + alias
@@ -36,12 +39,19 @@ alias ssh=color-ssh
 # vim
 # cd ~/.vim/bundle/YouCompleteMe && ./install.py --clang-completer
 alias vl='vim -c "cd `git rev-parse --show-toplevel`" `git whatchanged -n 1 --oneline | sed "1d" | sed -e "s/.*\s//"`'
-#alias vp='gvim -geom 170x70 -u ~/.gvimrc'
+#alias vd='gvimdiff -geom 200x70'
+alias vp='gvim -geom 170x70 -u ~/.gvimrc'
 alias vd='vimdiff -d '
 #alias vmap='vp $DEV_ROOT/rdtools/machine/build/map/coolidge.cluster.map'
 #alias veth='vp $DEV_ROOT/rdtools/machine/build/linux_headers/devices/ethernet_coolidge.h'
+alias vmap='vim -p $DEV_ROOT/linux_toolchain_coolidge/workspace/kEnv/kvxtools/opt/kalray/accesscore/kalray_internal/machine/linux_headers/devices/ethernet_coolidge.h  $DEV_ROOT/linux_toolchain_coolidge/workspace/kEnv/kvxtools/opt/kalray/accesscore/kalray_internal/machine/linux_headers/devices/eth_mac_ctrl_coolidge.h  $HOME/tmp/coolidge.cluster.map $DEV_ROOT/linux_toolchain_coolidge/workspace/kEnv/kvxtools/opt/kalray/accesscore/kalray_internal/machine/include/machine/devices/eth_mac_ctrl.coolidge.dev'
+
 alias v='vim'
 alias vc='vim -p `git diff --name-only --relative | uniq`'
+vg()
+{
+        vp `git grep --files-with-matches $1`
+}
 
 vfd()
 {
@@ -56,6 +66,18 @@ vdd()
   file1="$1/$3"
   file2="$2/$3"
   vimdiff $file1 $file2
+}
+
+ddiff()
+{
+    # Shell-escape each path:
+    DIR1=$(printf '%q' "$1"); shift
+    DIR2=$(printf '%q' "$1"); shift
+    echo $DIR1 $DIR2
+    for files in $(diff -rq $DIR1 $DIR2 | grep 'differ$'|sed "s/^Files //g;s/ differ$//g;s/ and /:/g"); do
+        vimdiff ${files%:*} ${files#*:};
+    done
+ #   vim $@ -c "DirDiff $DIR1 $DIR2"
 }
 
 # dev
@@ -134,9 +156,9 @@ function cg {
 		PORT="10000"
 	fi
     if [ -z "$2" ]; then
-        cgdb -d 'k1-gdb' -- -ex "attach-mppa $PORT" --
+        cgdb -d 'kvx-gdb' -- -ex "attach-mppa $PORT" --
     else
-        cgdb -d 'k1-gdb' -- -ex "attach-mppa $PORT" -ex 'tb gdb_mmu_enabled' -ex 'c' -ex 'thr 2' --
+        cgdb -d 'kvx-gdb' -- -ex "attach-mppa $PORT" -ex 'tb gdb_mmu_enabled' -ex 'c' -ex 'thr 2' --
     fi
 }
 
@@ -146,7 +168,7 @@ function gg() {
 }
 
 # git
-alias gd='git difftool -t gvimdiff -y '
+alias gd='git difftool -t vimdiff -y -M '
 alias gw='git whatchanged'
 function gws {
   CUR="$1"
@@ -162,8 +184,7 @@ function gws {
 alias gb='git branch --sort=-committerdate'
 alias gfa='git fetch -a'
 alias grv='git remote -v'
-alias gl='git log --oneline --format="%C(auto) %h %an / %ar / %s"  -n 30'
-alias gk='gitk -n100'
+alias gl='git log --oneline --format="%C(auto) %h %an / %cD / %s"'
 
 
 

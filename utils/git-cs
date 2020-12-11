@@ -1,0 +1,116 @@
+#!/usr/bin/ruby
+
+def commit_submodules()
+
+    status=`git submodule status`
+    sub_list=[]
+
+    status.split("\n").map { |line| sub_list << $1.strip() if line=~/^[ \+][0-9a-f]* ([^(]*)/ }
+    logs=""
+    sublogs=""
+    submodules=""
+
+    logs += "Updated submodules: "
+    sub_list.each(){ |submodule|
+        diff=`git diff --cached -- #{submodule}`
+        oldRef = newRef = "0000000000000000000000000000000000000000"
+        diff.split("\n").map { |line|
+            if line=~/^\-Subproject commit ([a-f0-9]*)/ then
+                oldRef=$1
+            elsif line=~/^\+Subproject commit ([a-f0-9]*)/ then
+                newRef=$1
+            end
+        }
+        next if (oldRef == newRef)
+
+        Dir.chdir(submodule)
+        logPredecesor=""
+        if oldRef != "0000000000000000000000000000000000000000" then
+            ancestors=`git log --pretty='%H' -n 50 #{oldRef}`.chomp().split()
+            logPredecesor="#{oldRef}.."
+            if ancestors.index(newRef) != nil then
+                puts "Submodule #{submodule} is further along than the requested commit. Skipping..."
+                Dir.chdir("..")
+                `git reset -- #{submodule}`
+                next
+            end
+        end
+        submodules+= "#{submodule} "
+        sublogs += "Submodule #{submodule}:\n"
+        sublogs += `git log #{logPredecesor}#{newRef} --pretty='format:  > %s'`
+        sublogs +="\n\n"
+
+        Dir.chdir("..")
+    }
+
+    logs += "#{submodules}\n\n"
+    sublogs.split("\n").map { |line| 
+        logs += "\t#{line}\n"
+    }
+
+    if submodules == "" then
+        puts "Nothing to commit. Add submodules to index first"
+        exit 0
+    end
+
+    puts logs
+    puts "Do you want to commit this? (y(es)/e(dit)/N(o))<Default=No>\n"
+
+    rep=STDIN.gets.chomp()
+    if rep == "y" || rep == "Y" || rep == "e" || rep == "E" then
+        outfilename=`mktemp`.chomp()
+        outfile=File.new(outfilename, "w")
+        outfile.puts logs
+        outfile.close
+        edit=""
+        edit="--edit" if rep == "e" || rep == "E"
+
+        system("git commit -s --file #{outfilename} #{edit}")
+
+        `rm -f #{outfilename}`
+        puts "Changes commited"
+    else
+        puts "Commit cancelled"
+    end
+end
+def add_and_commit_submodules(args)
+    args.each() { |arg|
+        puts "Adding #{arg} to index..."
+        if system("git add -- #{arg}") == false then
+            raise("Error adding #{arg} to index");
+        end
+    }
+    commit_submodules()
+end
+def update_and_commit_submodules(args)
+    cmd="git branch | egrep '^\\*' | sed -e 's/\\* //'"
+    cur_branch=`#{cmd}`.chomp()
+
+    args.each() { |arg|
+        Dir.chdir(arg)
+        `git remote update`
+        log=`git checkout -f origin/#{cur_branch} 2>&1`
+        Dir.chdir("..")
+        if $? == 0 then
+            puts log  
+            puts "Adding #{arg} to index..."
+            if system("git add -- #{arg}") == false then
+                raise("Error adding #{arg} to index");
+            end
+        end
+    }
+    commit_submodules()
+end
+
+case(ARGV[0])
+when "ucs"
+    ARGV.shift
+    update_and_commit_submodules(ARGV)
+when "cs"
+    ARGV.shift
+   add_and_commit_submodules(ARGV)
+when nil
+    raise("Usage: ucs|cs")
+else
+    raise("Usage: ucs|cs")
+end

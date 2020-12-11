@@ -6,7 +6,7 @@
 #      templatedir = ~/.git_template
 
 [core]
-	pager = less -r
+	pager = less -iXFR
 	excludesfile = ~/.gitignore_global
 	hooksPath = ~/.git_hooks/
 	symlinks = true
@@ -68,6 +68,9 @@
 [diff]
 	tool = vimdiff
 	guitool = gvimdiff
+
+[diff "dtb"]
+	textconv=fdtdump
 
 [difftool]
 	prompt = false
