@@ -2,7 +2,7 @@
 
 USER="pi"
 NAS_IP="192.168.1.25"
-RSYNC="rsync -atvuE --inplace --progress"
+RSYNC="rsync -atvcuE --inplace --progress"
 MOUNT_PT="/media/pi"
 
 ssh $USER@$NAS_IP "ls $MOUNT_PT" | while read hdd; do

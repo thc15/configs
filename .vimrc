@@ -27,7 +27,8 @@ Plug 'https://github.com/vim-scripts/python.vim.git'
 Plug 'https://github.com/tpope/vim-fugitive.git'
 Plug 'https://github.com/airblade/vim-gitgutter.git'
 "Plug 'https://github.com/jreybert/vimagit.git'
-Plug 'https://github.com/kien/ctrlp.vim.git'
+"Plug 'https://github.com/kien/ctrlp.vim.git'
+Plug 'junegunn/fzf.vim'
 Plug 'jacquesbh/vim-showmarks'
 Plug 'https://github.com/AndrewRadev/linediff.vim.git'
 Plug 'https://github.com/machakann/vim-highlightedyank.git'
@@ -92,6 +93,8 @@ set re=1
 set timeoutlen=0
 set laststatus=2
 set encoding=utf-8
+" Default to not read-only in vimdiff
+set noro
 
 set clipboard=unnamed
 set clipboard+=unnamedplus
@@ -135,8 +138,8 @@ autocmd! * *.gold
 autocmd BufEnter * silent! nested :DoShowMarks!
 autocmd BufEnter * silent! nested lcd %:p:h  "  break fugitive
 
-autocmd BufRead,BufNewFile *.py,*pyw set shiftwidth=4
-autocmd BufRead,BufNewFile *.py,*.pyw set expandtab
+autocmd BufRead,BufNewFile *.py,*.pyw,*.sh set shiftwidth=4
+autocmd BufRead,BufNewFile *.py,*.pyw,*.sh set expandtab
 autocmd BufRead,BufNewFile *.rb set expandtab
 autocmd BufRead,BufNewFile *.[ch] set noexpandtab
 autocmd BufRead,BufNewFile *.yaml set noexpandtab
@@ -244,6 +247,45 @@ let g:lightline = {
     \ }
 set fillchars+=stl:\ ,stlnc:\
 
+""""""""""""""""""""" FZF"""""""""""""""""""""""
+" - Popup window
+let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.6 } }
+" - down / up / left / right
+let g:fzf_layout = { 'down': '40%' }
+let g:fzf_history_dir = '~/.fzf/share/fzf-history'
+let g:fzf_preview_window = ['right:50%', 'ctrl-/']
+let g:fzf_preview_window = ['up:40%:hidden', 'ctrl-/']
+
+let g:fzf_buffers_jump = 0
+let g:fzf_commits_log_options = '--graph --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr"'
+let g:fzf_tags_command = 'ctags -R'
+let g:fzf_commands_expect = 'alt-enter,ctrl-x'
+
+command! -bang -nargs=* GGrep
+  \ call fzf#vim#grep(
+  \   'git grep --line-number -- '.shellescape(<q-args>), 0,
+  \   fzf#vim#with_preview({'dir': systemlist('git rev-parse --show-toplevel')[0]}), <bang>0)
+command! -bang -nargs=? -complete=dir Files
+    \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
+
+nnoremap <silent> <C-f> :Files<CR>
+nnoremap <silent> <Leader>f :Ag<CR>
+nnoremap <silent> <Leader>b :Buffers<CR>
+nnoremap <silent> <Leader>g :Commits<CR>
+
+"""""""""""""""""" ConqueGDB"""""""""""""""""
+"let dev_root="$DEV_ROOT"
+"let g:ConqueTerm_Color = 2         " 1: strip color after 200 lines, 2: always with color
+"let g:ConqueTerm_CloseOnEnd = 1    " close conque when program ends running
+"let g:ConqueTerm_StartMessages = 1 " display warning messages if conqueTerm is configured incorrectly
+"
+"let g:ConqueGdb_SaveHistory = 1
+"let g:ConqueTerm_Color = 0
+"let g:ConqueTerm_CloseOnEnd = 1
+""let g:ConqueGdb_Leader = ','
+"let g:ConqueTerm_ReadUnfocused = 1
+"
+"command! -nargs=*  Dc :ConqueGdbCommand <args>
 
 """"""""""""""""" Syntastic"""""""""""""""""
 "set statusline+=%#warningmsg#
@@ -261,7 +303,7 @@ let g:syntastic_c_checkers=['make','splint']
 "nnoremap <C-n> :NERDTree $DEV_ROOT<CR>
 "nnoremap <C-h> :NERDTreeToggle $DEV_ROOT<CR>
 "let g:NERDTreeChDirMode = 2
-nnoremap <C-t> :TagbarToggle <CR>
+"nnoremap <C-t> :TagbarToggle <CR>
 nnoremap <C-e> :chdir %:p:h <CR> :NERDTreeCWD <CR>
 nnoremap <C-d> :NERDTreeToggle <CR>
 
@@ -297,8 +339,8 @@ nnoremap <silent> <C-Down> :TmuxNavigateDown<cr>
 nnoremap <silent> <C-Up> :TmuxNavigateUp<cr>
 nnoremap <silent> <C-BS> :TmuxNavigatePrevious<cr>
 
-nmap <C-h> :bp <CR>
-nmap <C-l> :bn <CR>
+noremap <C-h> :bp <CR>
+noremap <C-l> :bn <CR>
 
 """""""""""""""""""" CSCOPE""""""""""""""""""""""
 "set cscopequickfix=s-,c-,d-,i-,t-,e-

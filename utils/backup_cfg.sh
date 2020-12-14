@@ -10,12 +10,15 @@ listFiles=( "$HOME/.vimrc*" \
  	     "$HOME/.gitconfig" \
  	     "$HOME/.gitignore_global" \
  	     "$HOME/.Xresources" \
+ 	     "$HOME/.Xsessionrc" \
  	     "$HOME/.ackrc" \
  	     "$HOME/.bash_aliases" \
  	     "$HOME/.bashrc" \
  	     "$HOME/.inputrc" \
  	     "$HOME/.tmux.conf" \
  	     "$HOME/.cgdbrc" \
+ 	     "$HOME/.config/i3" \
+ 	     "$HOME/docs" \
 	     "$HOME/utils" )
 
 

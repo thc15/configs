@@ -1,0 +1,5 @@
+#!/bin/bash
+
+if [ -f /usr/bin/start-pulseaudio-x11 ]; then
+        /usr/bin/start-pulseaudio-x11
+fi

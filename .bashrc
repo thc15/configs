@@ -56,8 +56,13 @@ if [ -n "$force_color_prompt" ]; then
     fi
 fi
 
+function last_dirs {
+        pwd | rev | awk -F / '{print $1,$2}' | rev | sed s_\ _/_
+}
+
 if [ "$color_prompt" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+        PS1='\[\e]2;\w\a\033[00;33m\]\t \[\033[00;32m\]\u\[\033[00m\]@\[\033[00;32m\]\h\[\033[00m]:\[\033[00;35m\]>$(last_dirs)\[\033[00m\](\[\033[00;36m\]`git branch 2>/dev/null|cut -f2 -d\* - | sed -e "s/ //"`\[\033[00m\])\n$'
+  #  PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
@@ -101,3 +106,5 @@ fi
 
 [[ -s /home/tcostis/.autojump/etc/profile.d/autojump.sh ]] && source $HOME/.autojump/etc/profile.d/autojump.sh
 
+source /usr/share/doc/fzf/examples/key-bindings.bash
+source /usr/share/doc/fzf/examples/completion.bash
