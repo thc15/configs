@@ -13,11 +13,13 @@ listFiles=( "$HOME/.vimrc*" \
  	     "$HOME/.Xsessionrc" \
  	     "$HOME/.ackrc" \
  	     "$HOME/.bash_aliases" \
+ 	     "$HOME/.bash_profile" \
  	     "$HOME/.bashrc" \
  	     "$HOME/.inputrc" \
  	     "$HOME/.tmux.conf" \
  	     "$HOME/.cgdbrc" \
  	     "$HOME/.config/i3" \
+ 	     "$HOME/.config/rofi" \
  	     "$HOME/docs" \
 	     "$HOME/utils" )
 
