@@ -1,0 +1,2 @@
+xrandr --output HDMI-1 --right-of eDP-1 --mode 1920x1200 --auto
+

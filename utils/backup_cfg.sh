@@ -1,22 +1,9 @@
 #!/bin/bash -x
 
-USER_GIT="thc15"
-REPO="ssh://git@github.com/$USER_GIT/configs"
-BRANCH="work"
+DIR=`dirname $0`
+source $DIR/list_cfg_files.sh
+
 DEST_DIR=`mktemp -d`
-
-listFiles=( "$HOME/.vimrc*" \
- 	     "$HOME/.gitconfig" \
- 	     "$HOME/.gitignore_global" \
- 	     "$HOME/.Xresources" \
- 	     "$HOME/.ackrc" \
- 	     "$HOME/.bash_aliases" \
- 	     "$HOME/.bashrc" \
- 	     "$HOME/.inputrc" \
- 	     "$HOME/.tmux.conf" \
- 	     "$HOME/.cgdbrc" \
-	     "$HOME/utils" )
-
 
 git clone $REPO -b $BRANCH $DEST_DIR
 
@@ -33,5 +20,3 @@ git commit -a -m "$CI"
 git push origin $BRANCH
 
 cd -
-
-

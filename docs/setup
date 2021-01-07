@@ -1,0 +1,14 @@
+cd ~/.proxy; python2.7 python-proxy.py 
+
+#ssh-add
+ssh-add ~/.ssh/id_tcostis_remote
+
+Host *  ControlPath ~/.ssh/master-%l-%r@%h:%p
+  ControlMaster auto
+
+#
+sshfs kalray:/work1/tcostis /mnt/pwork
+
+#xrandr
+xrandr --output HDMI-1 --right-of eDP-1 --mode 1920x1200 --auto
+
