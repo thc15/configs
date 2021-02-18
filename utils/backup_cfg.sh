@@ -1,6 +1,8 @@
 #!/bin/bash -x
 
-source list_cfg_files.sh
+CUR_DIR=`dirname $0`
+
+source $CUR_DIR/list_cfg_files.sh
 
 DEST_DIR=`mktemp -d`
 

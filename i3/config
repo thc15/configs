@@ -38,7 +38,21 @@ bindsym $mod+Shift+q kill
 #bindsym $mod+d exec dmenu_run
 bindsym $mod+d exec --no-startup-id "rofi -show-icons -modi windowcd,window,drun -show drun"
 bindsym $mod+Tab exec --no-startup-id "rofi -show-icons -modi windowcd,window,drun -show window"
-bindsym $mod+Shift+l exec --no-startup-id i3lock -c 000000
+#bindsym $mod+Shift+l exec --no-startup-id i3lock -c 000000
+set $lock  i3lock -c 000000 && sleep 1
+set $mode_system System (e) logout, (l) suspend, (h) hibernate, (r) reboot, (s) shutdown
+mode "$mode_system" {
+    bindsym e exec --no-startup-id i3-msg exit, mode "default"
+    bindsym l exec --no-startup-id "$lock ; systemctl suspend", mode "default"
+    bindsym h exec --no-startup-id "$lock ; systemctl hibernate", mode "default"
+    bindsym r exec --no-startup-id "systemctl reboot", mode "default"
+    bindsym s exec --no-startup-id "systemctl poweroff", mode "default"
+
+    # back to normal: Enter or Escape
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+F12 mode "$mode_system"
 
 #dmenu_run
 # There also is the (new) i3-dmenu-desktop which only displays applications
@@ -71,7 +85,7 @@ bindsym $mod+f fullscreen toggle
 #bindsym $mod+s layout stacking
 bindsym $mod+z layout tabbed
 bindsym $mod+e layout toggle split
-bindsym $mod+s layout toggle stacking tabbed split
+bindsym $mod+s layout toggle tabbed split
 
 # toggle tiling / floating
 bindsym $mod+Shift+space floating toggle
@@ -98,8 +112,10 @@ set $ws8 "8"
 set $ws9 "9"
 set $ws10 "10"
 
-workspace 4 output eDP-1 HDMI-1
-workspace 2 output eDP-1 HDMI-1
+workspace $ws1 output eDP-1
+workspace $ws2 output HDMI-1 eDP-1
+workspace $ws3 output HDMI-1 eDP-1
+workspace $ws4 output HDMI-1 eDP-1
 
 assign [class="Firefox"] $ws3
 assign [class="Google-chrome"] $ws3
@@ -108,6 +124,8 @@ assign [class="Org.gnome.Nautilus"] $ws2
 assign [class="Evince"] $ws2
 
 #for_window [class="vlc"] floating enable
+for_window [class="calculator"] floating enable
+for_window [class="zoom"] floating enable
 
 # switch to workspace
 bindsym $mod+ampersand workspace number $ws1
@@ -171,17 +189,18 @@ bindsym XF86AudioRaiseVolume exec "amixer -D pulse sset Master 5%+"
 bindsym XF86AudioLowerVolume exec "amixer -D pulse sset Master 5%-"
 bindsym XF86AudioMute exec "amixer -D pulse sset Master -- 0%"
 
-# Brightness
+# kbd backlight
 bindsym XF86KbdBrightnessDown exec "echo $(cat /sys/class/backlight/intel_backlight/brightness)-1 | bc > /sys/class/backlight/intel_backlight/brightness"
 bindsym XF86KbdBrightnessUp exec "echo $(cat /sys/class/backlight/intel_backlight/brightness)+1 | bc > /sys/class/backlight/intel_backlight/brightness"
 
-bindsym XF86MonBrightnessDown exec "xrandr --output eDP-1 --brightness 0.8"
-bindsym XF86MonBrightnessUp exec "xrandr --output eDP-1 --brightness 1"
-#"xbacklight -d eDP-1 -inc 5%"
+# Brightness
+bindsym XF86MonBrightnessDown exec "light -U 10 ; i3-msg brightness: `light -G`"
+bindsym XF86MonBrightnessUp exec "light -A 10"
 
 bar {
-        status_command i3status --config ~/.config/i3/i3status.conf
-       # status_command python3 ~/.config/i3/status_bar.py
-       # position bottom
+      # font pango:DejaVu Sans Mono 8
+      # status_command i3status --config ~/.config/i3/i3status.conf
+      status_command python3 ~/.config/i3/status_bar.py
+      # position bottom
        # workspace_buttons yes
 }
