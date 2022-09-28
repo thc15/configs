@@ -8,9 +8,22 @@ set completion-ignore-case on
 "\e[A": history-search-backward
 "\e[B": history-search-forward
 
-"\C-e": end-of-line
-"\C-a": beginning-of-line
-"\C-w": backward-kill-word
-"\C-k": kill-line
+#"\C-e": end-of-line
+#"\C-a": beginning-of-line
+#"\C-w": backward-kill-word
+#"\C-k": kill-line
 
+"\e[1;5D": backward-word
+"\e[1;5C": forward-word
+
+
+# those  are for rxvt
+"\e[1~": beginning-of-line
+"\e[4~": end-of-line
+"\e[5~": beginning-of-history
+"\e[6~": end-of-history
+"\e[3~": delete-char
+"\e[2~": quoted-insert
+"\e[7~": beginning-of-line
+"\e[8~": end-of-line
 

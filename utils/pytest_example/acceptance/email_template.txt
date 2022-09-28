@@ -1,0 +1,12 @@
+to: tcostis@kalray.eu, alesdalons@kalray.eu
+subject: acceptance report on board $BOARD_NAME ($KALRAY_NODE_NAME)
+
+Node   : $KALRAY_NODE_NAME
+Label  : $KALRAY_NODE_LABEL
+Board  : $BOARD_NAME
+
+CSV file:
+
+{csv_stats}
+
+See results here: $BUILD_URL

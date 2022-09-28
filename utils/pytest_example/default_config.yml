@@ -1,0 +1,38 @@
+version: 0.1
+vmlinux: /path/to/vmlinux
+acceptance-db: /path/to/acceptance.db
+iterations: 1
+release: 4.7
+switch-mgmt:
+  - vendor: mellanox-3.6
+    hostname: kalray-22
+    port: 22
+    login: admin
+    password: password_to_change
+  - vendor: mellanox-3.9
+    hostname: kalray-30
+    port: 22
+    login: hudson
+    password: password_to_change
+  - vendor: cisco-9.3
+    hostname: kalray-32
+    port: 22
+    login: admin
+    password: password_to_change
+test-parameters:
+  - autoneg: 'on'
+    speed:
+      host: 100000
+      mppa: 100000
+    fec: auto
+    config_first: 'host'
+ip-bindings:
+  - enmppa0:
+    host: 192.168.253.10/24
+    mppa: 192.168.253.1/24
+  - enmppa4:
+    host: 192.168.244.10/24
+    mppa: 192.168.244.1/24
+cable-sn-map: # no need to add cables with same SN on both sides
+  X3RBGG4: X3RBGFD # Finisar 100G
+  X3PAHVF: X3RBGF8 # Finisar 100G

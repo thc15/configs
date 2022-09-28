@@ -1,0 +1,118 @@
+= Results of the Ethernet Acceptance
+This document presents the results of the ethernet acceptance for the release {release}. 
+
+{warning}
+
+==== Metrics definition
+| EEPROM read         | Test whether 'ethtool -m <itf>' works                                                                           |
+| Link at boot        | Test whether the link is up after booting up.                                                                   |
+| Force link up       | In case the link is not up at boot, we can try to force using a ifdown/ifup sequence.                           |
+| Speed test          | Test whether the command `cat /sys/class/net/<ITF>/speed` returns the correct speed configured using `ethtool`. |
+| Simple ping test    | Send 1 ping from the host to the k200.                                                                          |
+| Iperf RX            | Measure RX bandwidth from the host to the k200.                                                                 |
+| Iperf TX            | Measure TX bandwidth from the k200 to the host.                                                                 |
+
+=== Abstract
+
+**Evaluator(s)**: <type evaluators name here>
+**Author of the report**: <type evaluator name here>
+
+> **Comment**:
+> <comment the results of the report here>
+
+=== Test a bunch of k200 with the same setup
+
+==== Configuration
+| link partner: | {0_lp_desc} ({0_lp_type})       |
+| cable:        | {0_cable_vendor} ({0_cable_pn}) |
+
+==== Results
+
+{0_bunch_k200}
+
+==== Total (percentages)
+
+{0_totals}
+
+=== Test a single k200 with a combination of setup
+
+==== Configuration
+| k200 type:   | {1_k200_type}          |
+| k200 config: | {1_k200_config}        |
+| k200 serial: | {1_k200_sn}            |
+
+==== Results
+
+{1_single_k200}
+
+
+=== Summary of Release {release}
+
+The score of a LP/cable setup for a set of test parameters is the minimum score of the following tests: {4_tests_name}
+
+For example:
+| LP/Cable | Test 1 | Test 2 | Test 3 | Score | Icon                        |
+|----------|--------|--------|--------|-------|-----------------------------|
+| LP1/Cab1 | 10/10  | 10/10  | 10/10  | 100%  | {{icon circle color=green}} |
+| LP2/Cab2 | 10/10  | 6/10   | 6/6    | 60%   | {{icon circle color=orange}}|
+| LP3/Cab3 | 10/10  | 6/10   | 0/6    | 00%   | {{icon circle color=red}}   |
+
+Legend: 
+| Icon                        | Level                   | Score |
+|-----------------------------|-------------------------|-------|
+{2_perf_color}
+
+==== Light Summary (autoneg by default)
+
+Test parameters: {3_parameters}.
+The following table is a light version of the full summary above.
+The first icon is the maximum of "Link up at boot", "Force link up". A green icon means that we were able to get the link up every time but not necessarily at boot.
+The second icon is the minimum of "Simple ping", "Iperf RX" and "Iperf TX". A green icon means that good performance can be expected after establishing the link.
+NOTE: The legend above applies to this table.
+
+{9_light_summary}
+
+==== Full Summary
+
+Test parameters: {3_parameters}.
+The colored icons correspond respectively to the following tests: {3_all_tests}
+
+{3_summary}
+
+==== Compaison between enmppa0 and enmppa4
+
+The colored icons correspond to the following parameters respectively: 
+{7_legend_icons}
+
+{7_diff_enmppa0_4}
+
+==== Comparison between different board types
+
+The colored icons correspond to the following parameters respectively: 
+{8_legend_icons}
+
+{8_diff_board_types}
+
+=== Comparison with the previous release {previous_release}
+
+The colored icons correspond to the following tests respectively: {4_tests_name}.
+
+Test parameters: {4_parameters}.
+
+The score used for comparison is the minimum score of the following tests: {4_tests_name}. An example is provided in the section //Summary//.
+
+The icon {{icon circle-o color=black}} means that no data is available for the previous or current release, therefore no comparison can be made.
+
+| Icon                        | Level                   | Difference |
+|-----------------------------|-------------------------|------------|
+{6_diff_color}
+
+{4_comparison}
+
+=== All pytest reports
+
+The following table lists all the pytest HTML reports for release {release}.
+
+| K200 Type  | Link Partner         | LP Type   | Cable Vendor   | Cable Type | Cable PN                  | report |
+|------------|----------------------|----------------------------|------------|---------------------------|--------|
+{5_all_reports}
