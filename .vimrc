@@ -2,6 +2,7 @@ set nocompatible              " be iMproved
 filetype off                  " required!
 
 set rtp+=~/bin/fzf
+set rtp+=~/.local/bin
 "call vundle#rc()
 " - Avoid using standard Vim directory names like 'plugin'
 call plug#begin('~/.vim/plugged')
@@ -25,7 +26,7 @@ Plug 'https://github.com/vim-scripts/python.vim.git'
 Plug 'https://github.com/tpope/vim-fugitive.git'
 Plug 'https://github.com/airblade/vim-gitgutter.git'
 "Plug 'https://github.com/jreybert/vimagit.git'
-Plug 'junegunn/fzf.vim'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'jacquesbh/vim-showmarks'
 Plug 'https://github.com/AndrewRadev/linediff.vim.git'
 Plug 'https://github.com/machakann/vim-highlightedyank.git'
@@ -50,7 +51,7 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'https://github.com/ap/vim-buftabline.git'
 Plug 'puremourning/vimspector'
 "Plug 'https://github.com/junegunn/vim-github-dashboard.git'
-Plug 'https://github.com/habamax/vim-rst.git'
+"Plug 'https://github.com/habamax/vim-rst.git' 100% cpu
 
 "LSC
 "Plug 'natebosch/vim-lsc'
@@ -110,8 +111,10 @@ set encoding=utf-8
 " Default to not read-only in vimdiff
 set noro
 
-"set clipboard=unnamed
-set clipboard=unnamedplus
+set clipboard=unnamed
+if has('unnamedplus')
+    set clipboard=unnamed,unnamedplus
+endif
 
 "make ctrl arrow ok
 set term=xterm-256color
@@ -130,7 +133,7 @@ let g:solarized_contrast = "low"
 let g:solarized_visibility = "high"
 let g:solarized_extra_hi_groups = 1
 
-"set paste " Do not set paste option for supertab
+
 " Visual sel to clipboard
 set go+=a
 
@@ -138,7 +141,6 @@ set go+=a
 set t_BE=
 set mouse=a
 set t_ut=
-
 "profile start profile.log
 "profile func *
 "profile file *
@@ -186,7 +188,7 @@ autocmd BufEnter * silent! nested lcd %:p:h  "  break fugitive
 autocmd BufRead,BufNewFile *.py,*.pyw,*.sh set shiftwidth=4
 autocmd BufRead,BufNewFile *.py,*.pyw,*.sh set expandtab
 autocmd BufRead,BufNewFile *.rb set expandtab
-autocmd BufRead,BufNewFile *.[ch] set noexpandtab
+autocmd BufRead,BufNewFile *.[ch] set expandtab
 autocmd BufRead,BufNewFile *.yaml set noexpandtab
 autocmd BufRead,BufNewFile *.dtsi set noexpandtab
 autocmd BufRead,BufNewFile *.robot,*.resource setf robot
@@ -230,7 +232,6 @@ vmap cu :s/\v^(\/\/\|#)//<CR>
 """"""""""""""""""" DIFF"""""""""""""""""""""""
 nnoremap <C-PageDown> ]c
 nnoremap <C-PageUp> [c
-nnoremap <leader>g :%diffget<CR>
 
 "let g:DiffUnit="Word1"
 "let g:DiffColors=323
@@ -242,7 +243,7 @@ let g:DiffModeSync=1
 
 " only for diff mode/vimdiff
 if &diff
-"  set diffopt+=filler,iwhite,icase,context:2
+  set diffopt+=filler,iwhite,icase,context:2
   set diffopt=filler  ",context:1000000
   set nocursorline
   set columns=200
@@ -252,6 +253,8 @@ autocmd FilterWritePre * if &diff | setlocal wrap< | endif
 let g:linediff_first_buffer_command  = 'new'
 let g:linediff_further_buffer_command = 'vertical new'
 
+"""""""""""""""""""""""""RST""""""""""""""""""""
+let g:rst2html_prg='rst2html5'
 
 "Ultisnips Settings
 let g:UltiSnipsExpandTrigger="<tab>"
@@ -401,13 +404,9 @@ let NERDTreeDirArrows = 1
 let NERDTreeQuitOnOpen = 3
 
 """""""""""""""""""" TAGS""""""""""""""""""""""
-set tags=./tags;,tags;,.tags
-nnoremap <leader>t :tag <c-r><c-w><cr>
+set tags=./tags,tags;~/work
+nnoremap <leader>t :tag <c-r><c-w><CR>
 "C-t to go back
-
-"""""""""""""""""""" AUTOTAGS"""""""""""""""""""""
-let g:autotagTagsFile=".tags"
-let g:autotagStopAt=$HOME . "/work"
 
 """""""""""""""""""" TMUX"""""""""""""""""""""
 " Write all buffers before navigating from Vim to tmux pane
@@ -415,11 +414,11 @@ let g:tmux_navigator_save_on_switch = 2
 let g:tmux_navigator_disable_when_zoomed = 1
 
 let g:tmux_navigator_no_mappings = 1
-noremap <silent> <C-Left> :TmuxNavigateLeft<cr>
-noremap <silent> <C-Right> :TmuxNavigateRight<cr>
-noremap <silent> <C-Down> :TmuxNavigateDown<cr>
-noremap <silent> <C-Up> :TmuxNavigateUp<cr>
-noremap <silent> <C-BS> :TmuxNavigatePrevious<cr>
+noremap <silent> <C-Left> :<C-U>TmuxNavigateLeft<cr>
+noremap <silent> <C-Right> :<C-U>TmuxNavigateRight<cr>
+noremap <silent> <C-Down> :<C-U>TmuxNavigateDown<cr>
+noremap <silent> <C-Up> :<C-U>TmuxNavigateUp<cr>
+noremap <silent> <C-BS> :<C-U><C-U>TmuxNavigatePrevious<cr>
 
 noremap <C-h> :bp <CR>
 noremap <C-l> :bn <CR>

@@ -1,6 +1,5 @@
 [user]
 	name = Thomas Costis
-	email = tcostis@kalray.eu
 
 [init]
 #      templatedir = ~/.git_template
@@ -75,8 +74,3 @@
 [status]
 	showUntrackedFiles = normal
 
-[sendemail]
-	smtpServer = mail.kalray.eu
-	smtpUser = tcostis@kalray.eu
-	smtpEncryption = tls
-	smtpsslcertpath=/etc/ssl/certs/ca-bundle.trust.crt

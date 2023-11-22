@@ -8,7 +8,9 @@ export ZSH="$HOME/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="robbyrussell"
+#ZSH_THEME="robbyrussell"
+ZSH_THEME="avit"
+RPROMPT="[%D{%f/%m/%y} | %D{%L:%M:%S}]"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -21,7 +23,7 @@ ZSH_THEME="robbyrussell"
 
 # Uncomment the following line to use hyphen-insensitive completion.
 # Case-sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
+HYPHEN_INSENSITIVE="true"
 
 # Uncomment one of the following lines to change the auto-update behavior
 # zstyle ':omz:update' mode disabled  # disable automatic updates
@@ -35,7 +37,7 @@ ZSH_THEME="robbyrussell"
 # DISABLE_MAGIC_FUNCTIONS="true"
 
 # Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
+#DISABLE_LS_COLORS="true"
 
 # Uncomment the following line to disable auto-setting terminal title.
 # DISABLE_AUTO_TITLE="true"
@@ -80,6 +82,7 @@ export TERM=xterm-256color
 export MANPATH="/usr/local/man:$MANPATH"
 export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 export CONAN_CACERT_PATH=/etc/ssl/certs
+unset LESS
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
@@ -103,20 +106,44 @@ unalias ll
 
 alias v='vim'
 alias vd='vimdiff '
-alias fd='find . -name'
+alias vc='vim -p `git diff --name-only --relative | uniq`'
+alias vl='git diff --name-only HEAD^ | xargs -o vim'
 alias ll='ls -al'
 alias pg='ps aux | grep'
 alias rm='\rm -i'
 alias d='cd ..'
 alias cdm='cd $HOME/work/mediatek'
 alias cdl='cd $HOME/work/img-application-sw-linux/libcamera'
+alias cdi='cd $HOME/work/prg-camsens-sw/ipp-gst-transform'
 alias r='vim $HOME/Documents/r.txt'
 alias connect_rpi='ssh pi@10.131.176.113'
+alias connect_r3a='ssh rock@10.131.176.59'
 alias gr='grep -nri'
+alias killbg="jobs -p | sed -e 's/ +\|- //' | awk '{print \$2}' | xargs kill -9"
+alias killsshRockPI="kill -9 `pg ssh | grep -e "rock\|pi" | awk '{print $2}'`"
+#tmux
+alias tk='tmux kill-session -t '
+alias ta='tmux attach -t '
 #git
 alias gd='git difftool -t vimdiff -y -M '
 alias gg='git grep'
-alias gl='git log --oneline'
+alias gl='git log --oneline --pretty=format:"%C(yellow)%h %Cblue%>(12)%ad %Cgreen%<(7)%aN%Cred%d %Creset%s"'
+alias gw='git whatchanged'
+alias gb='git branch --sort=-committerdate'
+alias grv='git remote -v'
+
+unsetopt CDABLE_VARS
+unsetopt AUTO_NAME_DIRS
+
+function fd()
+{
+     find . -path '*proc*' -prune -o -iname $1 -print
+}
+
+function df_()
+{
+    du  -d 1 $1 | sort -h
+}
 
 function dirdiff()
 {
